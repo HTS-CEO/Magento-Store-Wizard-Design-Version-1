@@ -1,0 +1,2003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Corefinity - Magento Store Configuration Wizard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4F46E5;
+            --secondary-color: #1E293B;
+            --tertiary-color: #64748B;
+            --success-color: #10B981;
+            --warning-color: #F59E0B;
+            --error-color: #EF4444;
+            --background-color: #F8FAFC;
+            --card-color: #FFFFFF;
+            --border-color: #E2E8F0;
+            --text-primary: #1E293B;
+            --text-secondary: #64748B;
+            --sidebar-width: 280px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--card-color);
+            border-right: 1px solid var(--border-color);
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: fixed;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 0 1rem;
+        }
+
+        .sidebar-header img {
+            height: 40px;
+            margin-right: 0.75rem;
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .nav-menu {
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.25rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+
+        .nav-item.active {
+            background-color: rgba(79, 70, 229, 0.1);
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .nav-item:hover:not(.active) {
+            background-color: rgba(226, 232, 240, 0.5);
+        }
+
+        .nav-item .material-icons {
+            margin-right: 0.75rem;
+            font-size: 1.25rem;
+        }
+
+        .progress-container {
+            padding: 1.5rem 1rem 0;
+            margin-top: auto;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .progress-bar {
+            height: 6px;
+            background-color: var(--border-color);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+            width: 33%;
+            transition: width 0.3s ease;
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            margin-top: 1rem;
+            color: var(--error-color);
+            cursor: pointer;
+            border-radius: 0.375rem;
+            transition: background-color 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            background-color: rgba(239, 68, 68, 0.1);
+        }
+
+        .logout-btn .material-icons {
+            margin-right: 0.75rem;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex-grow: 1;
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.75rem;
+            font-weight: 500;
+        }
+
+        .user-name {
+            font-weight: 500;
+        }
+
+        /* Wizard Container */
+        .wizard-container {
+            background-color: var(--card-color);
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .wizard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .wizard-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .wizard-steps {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .step-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--border-color);
+        }
+
+        .step-indicator.active {
+            background-color: var(--primary-color);
+        }
+
+        /* Wizard Content */
+        .wizard-content {
+            display: none;
+        }
+
+        .wizard-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.375rem;
+            font-size: 1rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .form-text {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        /* Platform Selection */
+        .platform-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .platform-card {
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .platform-card:hover {
+            border-color: var(--primary-color);
+        }
+
+        .platform-card.selected {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .platform-card img {
+            height: 60px;
+            margin-bottom: 1rem;
+        }
+
+        .platform-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Dependencies */
+        .dependencies-container {
+            background-color: var(--background-color);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .dependencies-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .dependencies-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .dependency-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .dependency-icon {
+            width: 40px;
+            height: 40px;
+            background-color: var(--card-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.75rem;
+            color: var(--primary-color);
+        }
+
+        .dependency-info h4 {
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.125rem;
+        }
+
+        .dependency-info p {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Theme Selection */
+        .theme-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .theme-card {
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .theme-card:hover {
+            border-color: var(--primary-color);
+        }
+
+        .theme-card.selected {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .theme-image {
+            height: 180px;
+            background-color: #F1F5F9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+        }
+
+        .theme-info {
+            padding: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .theme-info h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .theme-info p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* Color Picker */
+        .color-picker-group {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .color-picker {
+            position: relative;
+        }
+
+        .color-picker-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .color-picker-input {
+            width: 100%;
+            height: 40px;
+            border-radius: 0.375rem;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+
+        /* Image Upload */
+        .image-upload-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .image-upload {
+            border: 1px dashed var(--border-color);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .image-upload:hover {
+            border-color: var(--primary-color);
+        }
+
+        .image-upload label {
+            display: block;
+            cursor: pointer;
+        }
+
+        .image-upload-icon {
+            font-size: 2rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .image-upload-text {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .image-upload-preview {
+            width: 100%;
+            height: 120px;
+            background-color: #F1F5F9;
+            border-radius: 0.25rem;
+            margin-top: 1rem;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-upload-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        /* Font Selection */
+        .font-selection {
+            margin-bottom: 1.5rem;
+        }
+
+        .font-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .font-option {
+            border: 1px solid var(--border-color);
+            border-radius: 0.375rem;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .font-option:hover {
+            border-color: var(--primary-color);
+        }
+
+        .font-option.selected {
+            border-color: var(--primary-color);
+            background-color: rgba(79, 70, 229, 0.05);
+        }
+
+        .font-option .font-sample {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .font-option .font-name {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .use-default-font {
+            display: flex;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+        .use-default-font input {
+            margin-right: 0.5rem;
+        }
+
+        /* Modules Section */
+        .modules-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .module-card {
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .module-card.selected {
+            border-color: var(--primary-color);
+            background-color: rgba(79, 70, 229, 0.05);
+        }
+
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .module-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .module-description {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .module-license {
+            font-size: 0.75rem;
+            color: var(--warning-color);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .module-license .material-icons {
+            font-size: 1rem;
+            margin-right: 0.25rem;
+        }
+
+        .module-toggle {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .module-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .module-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .module-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .module-slider {
+            background-color: var(--primary-color);
+        }
+
+        input:checked + .module-slider:before {
+            transform: translateX(20px);
+        }
+
+        /* Wizard Navigation */
+        .wizard-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #4338CA;
+        }
+
+        .btn-primary:disabled {
+            background-color: #C7D2FE;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background-color: white;
+            color: var(--primary-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: #F8FAFC;
+        }
+
+        /* Preview Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 0.5rem;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        .modal-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-tab {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-secondary);
+            border-bottom: 2px solid transparent;
+        }
+
+        .modal-tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .preview-container {
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .preview-navbar {
+            background-color: var(--secondary-color);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+
+        .preview-logo img {
+            height: 30px;
+        }
+
+        .preview-nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .preview-hero {
+            background-color: #F1F5F9;
+            padding: 3rem 1rem;
+            text-align: center;
+        }
+
+        .preview-hero h2 {
+            font-size: 1.75rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .preview-hero p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .preview-btn {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            display: inline-block;
+            font-weight: 500;
+        }
+
+        .preview-products {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            padding: 1.5rem;
+        }
+
+        .preview-product {
+            border: 1px solid var(--border-color);
+            border-radius: 0.375rem;
+            overflow: hidden;
+        }
+
+        .preview-product-image {
+            height: 160px;
+            background-color: #E2E8F0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+        }
+
+        .preview-product-info {
+            padding: 1rem;
+        }
+
+        .preview-product-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .preview-product-price {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .preview-product-btn {
+            width: 100%;
+            padding: 0.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 0.25rem;
+            font-weight: 500;
+        }
+
+        .preview-footer {
+            background-color: var(--secondary-color);
+            padding: 1.5rem;
+            color: white;
+            text-align: center;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 240px;
+            }
+            .main-content {
+                margin-left: 240px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 1rem;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 1.5rem;
+            }
+            .platform-options, .theme-options, .image-upload-group {
+                grid-template-columns: 1fr;
+            }
+            .preview-products {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .dependencies-grid {
+                grid-template-columns: 1fr;
+            }
+            .preview-products {
+                grid-template-columns: 1fr;
+            }
+            .modules-container {
+                grid-template-columns: 1fr;
+            }
+            .wizard-navigation {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <img src="https://www.corefinity.com/images/logo.svg" alt="Corefinity Logo">
+          
+        </div>
+        <div class="nav-menu">
+            <a href="#" class="nav-item active" data-step="intro">
+                <span class="material-icons">home</span>
+                Introduction
+            </a>
+            <a href="#" class="nav-item" data-step="platform">
+                <span class="material-icons">dns</span>
+                Platform
+            </a>
+            <a href="#" class="nav-item" data-step="modules">
+                <span class="material-icons">extension</span>
+                Modules
+            </a>
+            <a href="#" class="nav-item" data-step="styles">
+                <span class="material-icons">palette</span>
+                Styles
+            </a>
+            <a href="#" class="nav-item" data-step="sample-data">
+                <span class="material-icons">dataset</span>
+                Sample Data
+            </a>
+            <a href="#" class="nav-item" data-step="summary">
+                <span class="material-icons">checklist</span>
+                Summary
+            </a>
+            <a href="#" class="nav-item" data-step="profile">
+                <span class="material-icons">person</span>
+                Profile
+            </a>
+            <a href="#" class="nav-item" data-step="my-builds">
+                <span class="material-icons">inventory</span>
+                My Builds
+            </a>
+        </div>
+        <div class="progress-container">
+            <div class="progress-text">
+                <span>Progress</span>
+                <span>33%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 33%"></div>
+            </div>
+        </div>
+        <div class="logout-btn">
+            <span class="material-icons">logout</span>
+            Logout
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1>Magento Store Configuration Wizard</h1>
+            <div class="user-profile">
+                <div class="user-avatar">JD</div>
+                <div class="user-name">John Doe</div>
+            </div>
+        </div>
+
+        <!-- Wizard Container -->
+        <div class="wizard-container">
+            <!-- Introduction Step -->
+            <div class="wizard-content active" id="intro-step">
+                <div class="wizard-header">
+                    <div class="wizard-title">Introduction</div>
+                    <div class="wizard-steps">
+                        <div class="step-indicator active"></div>
+                        <div class="step-indicator"></div>
+                        <div class="step-indicator"></div>
+                        <div class="step-indicator"></div>
+                        <div class="step-indicator"></div>
+                        <div class="step-indicator"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="store-name" class="form-label">Store Name</label>
+                    <input type="text" id="store-name" class="form-control" placeholder="Enter your store name">
+                    <p class="form-text">This name will be used to identify your store configuration.</p>
+                </div>
+                <div class="wizard-navigation">
+                    <button class="btn btn-secondary" disabled>Back</button>
+                    <button class="btn btn-primary next-step" data-next="platform">Next Step</button>
+                </div>
+            </div>
+
+            <!-- Platform Step -->
+            <div class="wizard-content" id="platform-step">
+                <div class="wizard-header">
+                    <div class="wizard-title">Platform Selection</div>
+                    <div class="wizard-steps">
+                        <div class="step-indicator"></div>
+                        <div class="step-indicator active"></div>
+                        <div class="step-indicator"></div>
+                        <div class="step-indicator"></div>
+                        <div class="step-indicator"></div>
+                        <div class="step-indicator"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Select Your Platform</label>
+                    <div class="platform-options">
+                        <div class="platform-card" data-platform="magento">
+                            <img src="https://www.corefinity.com/wp-content/uploads/2023/05/magento-logo.png" alt="Magento Logo">
+                            <h3>Magento</h3>
+                            <p>Open-source e-commerce platform</p>
+                        </div>
+                        <div class="platform-card" data-platform="laravel">
+                            <img src="https://www.corefinity.com/wp-content/uploads/2023/05/laravel-logo.png" alt="Laravel Logo">
+                            <h3>Laravel</h3>
+                            <p>PHP web application framework</p>
+                        </div>
+                        <div class="platform-card" data-platform="wordpress">
+                            <img src="https://www.corefinity.com/wp-content/uploads/2023/05/wordpress-logo.png" alt="WordPress Logo">
+                            <h3>WordPress</h3>
+                            <p>Content management system</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group" id="version-select-group" style="display: none;">
+                    <label for="platform-version" class="form-label">Platform Version</label>
+                    <select id="platform-version" class="form-control">
+                        <option value="">Select a version</option>
+                    </select>
+                </div>
+                <div class="dependencies-container" id="dependencies-container" style="display: none;">
+                    <h3 class="dependencies-title">Dependencies</h3>
+                    <div class="dependencies-grid" id="dependencies-grid">
+                        <!-- Dependencies will be populated here -->
+                    </div>
+                </div>
+                <div class="wizard-navigation">
+                    <button class="btn btn-secondary prev-step" data-prev="intro">Back</button>
+                    <button class="btn btn-primary next-step" data-next="modules" disabled>Next Step</button>
+                </div>
+            </div>
+
+            <!-- Modules Step -->
+            <div class="wizard-content" id="modules-step">
+                <div class="wizard-header">
+                    <div class="wizard-title">Modules</div>
+                    <div class="wizard-steps">
+                        <div class="step-indicator"></div>
+                        <div class="step-indicator"></div>
+                        <div class="step-indicator active"></div>
+                        <div class="step-indicator"></div>
+                        <div class="step-indicator"></div>
+                        <div class="step-indicator"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Select Modules to Include</label>
+                    <p class="form-text">Choose which modules you want to include in your Magento store.</p>
+                    
+                    <div class="modules-container">
+                        <div class="module-card">
+                            <div class="module-header">
+                                <div>
+                                    <h3 class="module-title">Payment Module</h3>
+                                    <div class="module-license">
+                                        <span class="material-icons">warning</span>
+                                        Requires license key
+                                    </div>
+                                </div>
+                                <label class="module-toggle">
+                                    <input type="checkbox" class="module-checkbox">
+                                    <span class="module-slider"></span>
+                                </label>
+                            </div>
+                            <p class="module-description">Integrates multiple payment gateways including PayPal, Stripe, and credit card processing.</p>
+                        </div>
+                        
+                        <div class="module-card">
+                            <div class="module-header">
+                                <div>
+                                    <h3 class="module-title">Shipping Module</h3>
+                                </div>
+                                <label class="module-toggle">
+                                    <input type="checkbox" class="module-checkbox">
+                                    <span class="module-slider"></span>
+                                </label>
+                            </div>
+                            <p class="module-description">Provides real-time shipping rates from major carriers and custom shipping options.</p>
+                        </div>
+                        
+                        <div class="module-card">
+                            <div class="module-header">
+                                <div>
+                                    <h3 class="module-title">SEO Module</h3>
+                                </div>
+                                <label class="module-toggle">
+                                    <input type="checkbox" class="module-checkbox">
+                                    <span class="module-slider"></span>
+                                </label>
+                            </div>
+                            <p class="module-description">Advanced SEO tools including meta tag management, sitemap generation, and URL optimization.</p>
+                        </div>
+                        
+                        <div class="module-card">
+                            <div class="module-header">
+                                <div>
+                                    <h3 class="module-title">Analytics Module</h3>
+                                    <div class="module-license">
+                                        <span class="material-icons">warning</span>
+                                        Requires license key
+                                    </div>
+                                </div>
+                                <label class="module-toggle">
+                                    <input type="checkbox" class="module-checkbox">
+                                    <span class="module-slider"></span>
+                                </label>
+                            </div>
+                            <p class="module-description">Comprehensive analytics dashboard with sales tracking, customer behavior, and conversion metrics.</p>
+                        </div>
+                        
+                        <div class="module-card">
+                            <div class="module-header">
+                                <div>
+                                    <h3 class="module-title">Multi-Store Module</h3>
+                                </div>
+                                <label class="module-toggle">
+                                    <input type="checkbox" class="module-checkbox">
+                                    <span class="module-slider"></span>
+                                </label>
+                            </div>
+                            <p class="module-description">Manage multiple stores from a single admin panel with shared products and separate branding.</p>
+                        </div>
+                        
+                        <div class="module-card">
+                            <div class="module-header">
+                                <div>
+                                    <h3 class="module-title">Customer Loyalty</h3>
+                                    <div class="module-license">
+                                        <span class="material-icons">warning</span>
+                                        Requires license key
+                                    </div>
+                                </div>
+                                <label class="module-toggle">
+                                    <input type="checkbox" class="module-checkbox">
+                                    <span class="module-slider"></span>
+                                </label>
+                            </div>
+                            <p class="module-description">Reward points system, referral program, and customer segmentation tools.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="wizard-navigation">
+                    <button class="btn btn-secondary prev-step" data-prev="platform">Back</button>
+                    <button class="btn btn-primary next-step" data-next="styles">Next Step</button>
+                </div>
+            </div>
+
+            <!-- Styles Step -->
+            <div class="wizard-content" id="styles-step">
+                <div class="wizard-header">
+                    <div class="wizard-title">Styles</div>
+                    <div class="wizard-steps">
+                        <div class="step-indicator"></div>
+                        <div class="step-indicator"></div>
+                        <div class="step-indicator"></div>
+                        <div class="step-indicator active"></div>
+                        <div class="step-indicator"></div>
+                        <div class="step-indicator"></div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Select Theme</label>
+                    <div class="theme-options">
+                        <div class="theme-card selected" data-theme="luma">
+                            <div class="theme-image">
+                                [Luma Theme Preview]
+                            </div>
+                            <div class="theme-info">
+                                <h3>Luma</h3>
+                                <p>Default Magento theme with clean design and responsive layout</p>
+                            </div>
+                        </div>
+                        <div class="theme-card" data-theme="hyva">
+                            <div class="theme-image">
+                                [Hyva Theme Preview]
+                            </div>
+                            <div class="theme-info">
+                                <h3>Hyva</h3>
+                                <p>Modern theme with improved performance and PWA support</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" id="preview-theme-btn" style="margin-top: 1rem;">
+                        <span class="material-icons" style="vertical-align: middle; margin-right: 0.5rem;">visibility</span>
+                        Preview Theme
+                    </button>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Color Scheme</label>
+                    <div class="color-picker-group">
+                        <div class="color-picker">
+                            <label class="color-picker-label">Primary Color</label>
+                            <input type="color" id="primary-color" class="color-picker-input" value="#4F46E5">
+                        </div>
+                        <div class="color-picker">
+                            <label class="color-picker-label">Secondary Color</label>
+                            <input type="color" id="secondary-color" class="color-picker-input" value="#1E293B">
+                        </div>
+                        <div class="color-picker">
+                            <label class="color-picker-label">Tertiary Color</label>
+                            <input type="color" id="tertiary-color" class="color-picker-input" value="#64748B">
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" id="preview-colors-btn">
+                        <span class="material-icons" style="vertical-align: middle; margin-right: 0.5rem;">visibility</span>
+                        Preview Colors
+                    </button>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Logo & Favicon</label>
+                    <div class="image-upload-group">
+                        <div class="image-upload">
+                            <label>
+                                <div class="image-upload-icon material-icons">image</div>
+                                <div class="image-upload-text">Upload Store Logo (PNG, JPG, max 2MB)</div>
+                                <input type="file" id="store-logo" accept="image/png, image/jpeg" style="display: none;">
+                                <div class="btn btn-secondary">Choose File</div>
+                            </label>
+                            <div class="image-upload-preview" id="logo-preview">
+                                [Logo Preview]
+                            </div>
+                        </div>
+                        <div class="image-upload">
+                            <label>
+                                <div class="image-upload-icon material-icons">image</div>
+                                <div class="image-upload-text">Upload Favicon (ICO, PNG, max 256x256px)</div>
+                                <input type="file" id="store-favicon" accept="image/x-icon, image/png" style="display: none;">
+                                <div class="btn btn-secondary">Choose File</div>
+                            </label>
+                            <div class="image-upload-preview" id="favicon-preview">
+                                [Favicon Preview]
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" id="preview-logos-btn">
+                        <span class="material-icons" style="vertical-align: middle; margin-right: 0.5rem;">visibility</span>
+                        Preview Logos
+                    </button>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Font Selection</label>
+                    <div class="font-selection">
+                        <div class="form-group">
+                            <input type="text" id="font-search" class="form-control" placeholder="Search Google Fonts...">
+                        </div>
+                        <div class="font-options">
+                            <div class="font-option selected" data-font="Roboto">
+                                <div class="font-sample" style="font-family: 'Roboto'">Aa</div>
+                                <div class="font-name">Roboto</div>
+                            </div>
+                            <div class="font-option" data-font="Open Sans">
+                                <div class="font-sample" style="font-family: 'Open Sans'">Aa</div>
+                                <div class="font-name">Open Sans</div>
+                            </div>
+                            <div class="font-option" data-font="Montserrat">
+                                <div class="font-sample" style="font-family: 'Montserrat'">Aa</div>
+                                <div class="font-name">Montserrat</div>
+                            </div>
+                            <div class="font-option" data-font="Poppins">
+                                <div class="font-sample" style="font-family: 'Poppins'">Aa</div>
+                                <div class="font-name">Poppins</div>
+                            </div>
+                        </div>
+                        <div class="use-default-font">
+                            <input type="checkbox" id="use-default-font">
+                            <label for="use-default-font">Use default theme font</label>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" id="preview-font-btn">
+                        <span class="material-icons" style="vertical-align: middle; margin-right: 0.5rem;">visibility</span>
+                        Preview Font
+                    </button>
+                </div>
+                
+                <div class="wizard-navigation">
+                    <button class="btn btn-secondary prev-step" data-prev="modules">Back</button>
+                    <button class="btn btn-primary next-step" data-next="sample-data">Next Step</button>
+                </div>
+            </div>
+
+            <!-- Sample Data Step -->
+            <div class="wizard-content" id="sample-data-step">
+                <div class="wizard-header">
+                    <div class="wizard-title">Sample Data</div>
+                    <div class="wizard-steps">
+                        <div class="step-indicator"></div>
+                        <div class="step-indicator"></div>
+                        <div class="step-indicator"></div>
+                        <div class="step-indicator"></div>
+                        <div class="step-indicator active"></div>
+                        <div class="step-indicator"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Install Sample Data</label>
+                    <div class="form-check">
+                        <input type="checkbox" id="install-sample-data" class="form-check-input">
+                        <label for="install-sample-data" class="form-check-label">Include sample products, categories, and pages</label>
+                    </div>
+                    <p class="form-text">Sample data helps you get started quickly by providing example products, categories, and CMS pages. You can remove them later.</p>
+                </div>
+                <div class="wizard-navigation">
+                    <button class="btn btn-secondary prev-step" data-prev="styles">Back</button>
+                    <button class="btn btn-primary next-step" data-next="summary">Next Step</button>
+                </div>
+            </div>
+
+            <!-- Summary Step -->
+            <div class="wizard-content" id="summary-step">
+                <div class="wizard-header">
+                    <div class="wizard-title">Summary</div>
+                    <div class="wizard-steps">
+                        <div class="step-indicator"></div>
+                        <div class="step-indicator"></div>
+                        <div class="step-indicator"></div>
+                        <div class="step-indicator"></div>
+                        <div class="step-indicator"></div>
+                        <div class="step-indicator active"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <h3 style="margin-bottom: 1.5rem;">Review Your Configuration</h3>
+                    
+                    <div class="summary-section">
+                        <h4 style="margin-bottom: 1rem; color: var(--primary-color);">Basic Information</h4>
+                        <div class="summary-item">
+                            <span class="summary-label">Store Name:</span>
+                            <span class="summary-value" id="summary-store-name">My Store</span>
+                        </div>
+                    </div>
+                    
+                    <div class="summary-section" style="margin-top: 2rem;">
+                        <h4 style="margin-bottom: 1rem; color: var(--primary-color);">Platform</h4>
+                        <div class="summary-item">
+                            <span class="summary-label">Platform:</span>
+                            <span class="summary-value" id="summary-platform">Magento</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">Version:</span>
+                            <span class="summary-value" id="summary-version">2.4.7</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">Dependencies:</span>
+                            <div class="summary-value">
+                                <div>PHP: 8.3</div>
+                                <div>MariaDB: 10.6</div>
+                                <div>Redis: 7.2</div>
+                                <div>OpenSearch: 2.11</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="summary-section" style="margin-top: 2rem;">
+                        <h4 style="margin-bottom: 1rem; color: var(--primary-color);">Modules</h4>
+                        <div class="summary-value">
+                            <div>Payment Module</div>
+                            <div>Shipping Module</div>
+                            <div>SEO Module</div>
+                        </div>
+                    </div>
+                    
+                    <div class="summary-section" style="margin-top: 2rem;">
+                        <h4 style="margin-bottom: 1rem; color: var(--primary-color);">Styles</h4>
+                        <div class="summary-item">
+                            <span class="summary-label">Theme:</span>
+                            <span class="summary-value">Luma</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">Colors:</span>
+                            <div class="summary-value">
+                                <div style="display: flex; align-items: center;">
+                                    <div style="width: 20px; height: 20px; background-color: #4F46E5; margin-right: 0.5rem; border-radius: 3px;"></div>
+                                    Primary: #4F46E5
+                                </div>
+                                <div style="display: flex; align-items: center;">
+                                    <div style="width: 20px; height: 20px; background-color: #1E293B; margin-right: 0.5rem; border-radius: 3px;"></div>
+                                    Secondary: #1E293B
+                                </div>
+                                <div style="display: flex; align-items: center;">
+                                    <div style="width: 20px; height: 20px; background-color: #64748B; margin-right: 0.5rem; border-radius: 3px;"></div>
+                                    Tertiary: #64748B
+                                </div>
+                            </div>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">Font:</span>
+                            <span class="summary-value">Roboto</span>
+                        </div>
+                    </div>
+                    
+                    <div class="summary-section" style="margin-top: 2rem;">
+                        <h4 style="margin-bottom: 1rem; color: var(--primary-color);">Sample Data</h4>
+                        <div class="summary-item">
+                            <span class="summary-label">Include Sample Data:</span>
+                            <span class="summary-value">Yes</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="wizard-navigation">
+                    <button class="btn btn-secondary prev-step" data-prev="sample-data">Back</button>
+                    <button class="btn btn-primary" id="build-deploy-btn">Build & Deploy Site</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview Modal -->
+    <div class="modal" id="preview-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Theme Preview</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-tabs">
+                <div class="modal-tab active" data-view="desktop">Desktop</div>
+                <div class="modal-tab" data-view="mobile">Mobile</div>
+            </div>
+            <div class="modal-body">
+                <div class="preview-container">
+                    <div class="preview-navbar">
+                        <div class="preview-logo">
+                            <img src="https://www.corefinity.com/wp-content/uploads/2023/05/corefinity-logo-white.svg" alt="Store Logo">
+                        </div>
+                        <div class="preview-nav-links">
+                            <div>Home</div>
+                            <div>Products</div>
+                            <div>Categories</div>
+                            <div>About</div>
+                            <div>Contact</div>
+                        </div>
+                    </div>
+                    <div class="preview-hero">
+                        <h2>Welcome to Our Store</h2>
+                        <p>Discover our amazing collection of products designed to meet your needs and exceed your expectations.</p>
+                        <div class="preview-btn">Shop Now</div>
+                    </div>
+                    <div class="preview-products">
+                        <div class="preview-product">
+                            <div class="preview-product-image">Product Image</div>
+                            <div class="preview-product-info">
+                                <div class="preview-product-title">Premium Product</div>
+                                <div class="preview-product-price">$99.99</div>
+                                <button class="preview-product-btn">Add to Cart</button>
+                            </div>
+                        </div>
+                        <div class="preview-product">
+                            <div class="preview-product-image">Product Image</div>
+                            <div class="preview-product-info">
+                                <div class="preview-product-title">Standard Product</div>
+                                <div class="preview-product-price">$49.99</div>
+                                <button class="preview-product-btn">Add to Cart</button>
+                            </div>
+                        </div>
+                        <div class="preview-product">
+                            <div class="preview-product-image">Product Image</div>
+                            <div class="preview-product-info">
+                                <div class="preview-product-title">Basic Product</div>
+                                <div class="preview-product-price">$29.99</div>
+                                <button class="preview-product-btn">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="preview-footer">
+                        &copy; 2023 My Store. All rights reserved.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Platform Data
+        const platformData = {
+            magento: {
+                versions: {
+                    '2.4.7': {
+                        php: '8.3',
+                        mariadb: '10.6',
+                        redis: '7.2',
+                        opensearch: '2.11'
+                    },
+                    '2.4.6': {
+                        php: '8.2',
+                        mariadb: '10.5',
+                        redis: '7.0',
+                        opensearch: '2.9'
+                    },
+                    '2.4.5': {
+                        php: '8.1',
+                        mariadb: '10.4',
+                        redis: '6.2',
+                        opensearch: '2.6'
+                    },
+                    '2.4.4': {
+                        php: '8.0',
+                        mariadb: '10.4',
+                        redis: '6.0',
+                        opensearch: '2.4'
+                    },
+                    '2.3.7': {
+                        php: '7.4',
+                        mariadb: '10.3',
+                        redis: '5.0',
+                        opensearch: 'N/A'
+                    }
+                }
+            },
+            laravel: {
+                versions: {
+                    '11': {
+                        php: '8.2',
+                        mariadb: '10.6',
+                        redis: '7.2',
+                        opensearch: 'N/A'
+                    },
+                    '10': {
+                        php: '8.1',
+                        mariadb: '10.4',
+                        redis: '6.2',
+                        opensearch: 'N/A'
+                    },
+                    '9': {
+                        php: '8.0',
+                        mariadb: '10.3',
+                        redis: '6.0',
+                        opensearch: 'N/A'
+                    },
+                    '8': {
+                        php: '7.4',
+                        mariadb: '10.3',
+                        redis: '5.0',
+                        opensearch: 'N/A'
+                    },
+                    '7': {
+                        php: '7.3',
+                        mariadb: '10.2',
+                        redis: '5.0',
+                        opensearch: 'N/A'
+                    }
+                }
+            },
+            wordpress: {
+                versions: {
+                    '6.5': {
+                        php: '8.1',
+                        mariadb: '10.4',
+                        redis: '7.0',
+                        opensearch: 'N/A'
+                    },
+                    '6.4': {
+                        php: '8.0',
+                        mariadb: '10.3',
+                        redis: '6.0',
+                        opensearch: 'N/A'
+                    },
+                    '6.3': {
+                        php: '7.4',
+                        mariadb: '10.2',
+                        redis: '5.0',
+                        opensearch: 'N/A'
+                    },
+                    '6.2': {
+                        php: '7.3',
+                        mariadb: '10.1',
+                        redis: '5.0',
+                        opensearch: 'N/A'
+                    },
+                    '5.9': {
+                        php: '7.2',
+                        mariadb: '10.0',
+                        redis: '4.0',
+                        opensearch: 'N/A'
+                    }
+                }
+            }
+        };
+
+        // Current configuration
+        const config = {
+            storeName: '',
+            platform: '',
+            version: '',
+            modules: [],
+            theme: 'luma',
+            primaryColor: '#4F46E5',
+            secondaryColor: '#1E293B',
+            tertiaryColor: '#64748B',
+            font: 'Roboto',
+            useDefaultFont: false,
+            logo: null,
+            favicon: null,
+            sampleData: false
+        };
+
+        // DOM Elements
+        const storeNameInput = document.getElementById('store-name');
+        const platformCards = document.querySelectorAll('.platform-card');
+        const versionSelect = document.getElementById('platform-version');
+        const versionSelectGroup = document.getElementById('version-select-group');
+        const dependenciesContainer = document.getElementById('dependencies-container');
+        const dependenciesGrid = document.getElementById('dependencies-grid');
+        const nextStepButtons = document.querySelectorAll('.next-step');
+        const prevStepButtons = document.querySelectorAll('.prev-step');
+        const navItems = document.querySelectorAll('.nav-item');
+        const wizardContents = document.querySelectorAll('.wizard-content');
+        const progressFill = document.querySelector('.progress-fill');
+        const themeCards = document.querySelectorAll('.theme-card');
+        const primaryColorInput = document.getElementById('primary-color');
+        const secondaryColorInput = document.getElementById('secondary-color');
+        const tertiaryColorInput = document.getElementById('tertiary-color');
+        const storeLogoInput = document.getElementById('store-logo');
+        const storeFaviconInput = document.getElementById('store-favicon');
+        const logoPreview = document.getElementById('logo-preview');
+        const faviconPreview = document.getElementById('favicon-preview');
+        const fontOptions = document.querySelectorAll('.font-option');
+        const useDefaultFontCheckbox = document.getElementById('use-default-font');
+        const installSampleDataCheckbox = document.getElementById('install-sample-data');
+        const previewModal = document.getElementById('preview-modal');
+        const modalClose = document.querySelector('.modal-close');
+        const modalTabs = document.querySelectorAll('.modal-tab');
+        const buildDeployBtn = document.getElementById('build-deploy-btn');
+        const previewThemeBtn = document.getElementById('preview-theme-btn');
+        const previewColorsBtn = document.getElementById('preview-colors-btn');
+        const previewLogosBtn = document.getElementById('preview-logos-btn');
+        const previewFontBtn = document.getElementById('preview-font-btn');
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize the wizard
+            updateSummary();
+            
+            // Store name input
+            storeNameInput.addEventListener('input', function() {
+                config.storeName = this.value;
+                updateSummary();
+            });
+            
+            // Platform selection
+            platformCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // Remove selected class from all cards
+                    platformCards.forEach(c => c.classList.remove('selected'));
+                    
+                    // Add selected class to clicked card
+                    this.classList.add('selected');
+                    
+                    // Set the platform in config
+                    const platform = this.dataset.platform;
+                    config.platform = platform;
+                    
+                    // Show version select
+                    versionSelectGroup.style.display = 'block';
+                    
+                    // Populate versions
+                    versionSelect.innerHTML = '<option value="">Select a version</option>';
+                    const versions = platformData[platform].versions;
+                    
+                    for (const version in versions) {
+                        const option = document.createElement('option');
+                        option.value = version;
+                        option.textContent = version;
+                        versionSelect.appendChild(option);
+                    }
+                    
+                    // Enable next step button if version is already selected
+                    const nextStepBtn = document.querySelector('#platform-step .next-step');
+                    nextStepBtn.disabled = !config.version;
+                    
+                    updateSummary();
+                });
+            });
+            
+            // Version selection
+            versionSelect.addEventListener('change', function() {
+                const version = this.value;
+                config.version = version;
+                
+                if (version) {
+                    // Show dependencies
+                    dependenciesContainer.style.display = 'block';
+                    
+                    // Populate dependencies
+                    const dependencies = platformData[config.platform].versions[version];
+                    dependenciesGrid.innerHTML = '';
+                    
+                    for (const dep in dependencies) {
+                        const dependencyItem = document.createElement('div');
+                        dependencyItem.className = 'dependency-item';
+                        
+                        dependencyItem.innerHTML = `
+                            <div class="dependency-icon">
+                                <span class="material-icons">info</span>
+                            </div>
+                            <div class="dependency-info">
+                                <h4>${dep.charAt(0).toUpperCase() + dep.slice(1)}</h4>
+                                <p>${dependencies[dep]}</p>
+                            </div>
+                        `;
+                        
+                        dependenciesGrid.appendChild(dependencyItem);
+                    }
+                    
+                    // Enable next step button
+                    const nextStepBtn = document.querySelector('#platform-step .next-step');
+                    nextStepBtn.disabled = false;
+                } else {
+                    // Hide dependencies
+                    dependenciesContainer.style.display = 'none';
+                    
+                    // Disable next step button
+                    const nextStepBtn = document.querySelector('#platform-step .next-step');
+                    nextStepBtn.disabled = true;
+                }
+                
+                updateSummary();
+            });
+            
+            // Next step navigation
+            nextStepButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const nextStep = this.dataset.next;
+                    navigateToStep(nextStep);
+                });
+            });
+            
+            // Previous step navigation
+            prevStepButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const prevStep = this.dataset.prev;
+                    navigateToStep(prevStep);
+                });
+            });
+            
+            // Sidebar navigation
+            navItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const step = this.dataset.step;
+                    navigateToStep(step);
+                });
+            });
+            
+            // Theme selection
+            themeCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // Remove selected class from all cards
+                    themeCards.forEach(c => c.classList.remove('selected'));
+                    
+                    // Add selected class to clicked card
+                    this.classList.add('selected');
+                    
+                    // Set the theme in config
+                    config.theme = this.dataset.theme;
+                    updateSummary();
+                });
+            });
+            
+            // Color pickers
+            primaryColorInput.addEventListener('input', function() {
+                config.primaryColor = this.value;
+                updateSummary();
+            });
+            
+            secondaryColorInput.addEventListener('input', function() {
+                config.secondaryColor = this.value;
+                updateSummary();
+            });
+            
+            tertiaryColorInput.addEventListener('input', function() {
+                config.tertiaryColor = this.value;
+                updateSummary();
+            });
+            
+            // Logo upload
+            storeLogoInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        logoPreview.innerHTML = `<img src="${e.target.result}" alt="Logo Preview">`;
+                        config.logo = e.target.result;
+                        updateSummary();
+                    };
+                    
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+            
+            // Favicon upload
+            storeFaviconInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        faviconPreview.innerHTML = `<img src="${e.target.result}" alt="Favicon Preview">`;
+                        config.favicon = e.target.result;
+                        updateSummary();
+                    };
+                    
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+            
+            // Font selection
+            fontOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    // Remove selected class from all options
+                    fontOptions.forEach(o => o.classList.remove('selected'));
+                    
+                    // Add selected class to clicked option
+                    this.classList.add('selected');
+                    
+                    // Set the font in config
+                    config.font = this.dataset.font;
+                    config.useDefaultFont = false;
+                    useDefaultFontCheckbox.checked = false;
+                    updateSummary();
+                });
+            });
+            
+            // Use default font checkbox
+            useDefaultFontCheckbox.addEventListener('change', function() {
+                config.useDefaultFont = this.checked;
+                updateSummary();
+            });
+            
+            // Sample data checkbox
+            installSampleDataCheckbox.addEventListener('change', function() {
+                config.sampleData = this.checked;
+                updateSummary();
+            });
+            
+            // Module toggles
+            document.querySelectorAll('.module-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const moduleCard = this.closest('.module-card');
+                    const moduleTitle = moduleCard.querySelector('.module-title').textContent;
+                    
+                    if (this.checked) {
+                        if (!config.modules.includes(moduleTitle)) {
+                            config.modules.push(moduleTitle);
+                        }
+                    } else {
+                        const index = config.modules.indexOf(moduleTitle);
+                        if (index > -1) {
+                            config.modules.splice(index, 1);
+                        }
+                    }
+                    
+                    updateSummary();
+                });
+            });
+            
+            // Preview buttons
+            previewThemeBtn.addEventListener('click', openPreviewModal);
+            previewColorsBtn.addEventListener('click', openPreviewModal);
+            previewLogosBtn.addEventListener('click', openPreviewModal);
+            previewFontBtn.addEventListener('click', openPreviewModal);
+            
+            // Modal close
+            modalClose.addEventListener('click', closePreviewModal);
+            
+            // Modal tabs
+            modalTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active class from all tabs
+                    modalTabs.forEach(t => t.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+                    
+                    // Here you would typically switch the preview between desktop and mobile views
+                    // For this example, we'll just log the view
+                    console.log(`Switched to ${this.dataset.view} view`);
+                });
+            });
+            
+            // Build & Deploy button
+            buildDeployBtn.addEventListener('click', function() {
+                alert('Configuration submitted successfully!');
+                // In a real application, you would send the config to your backend here
+                console.log('Final Configuration:', config);
+            });
+        });
+        
+        // Functions
+        function navigateToStep(step) {
+            // Hide all wizard contents
+            wizardContents.forEach(content => content.classList.remove('active'));
+            
+            // Show the selected step
+            document.getElementById(`${step}-step`).classList.add('active');
+            
+            // Update active nav item
+            navItems.forEach(item => item.classList.remove('active'));
+            document.querySelector(`.nav-item[data-step="${step}"]`).classList.add('active');
+            
+            // Update progress bar
+            updateProgressBar(step);
+            
+            // Update step indicators
+            updateStepIndicators(step);
+        }
+        
+        function updateProgressBar(step) {
+            let progress = 0;
+            
+            switch (step) {
+                case 'intro':
+                    progress = 0;
+                    break;
+                case 'platform':
+                    progress = 20;
+                    break;
+                case 'modules':
+                    progress = 40;
+                    break;
+                case 'styles':
+                    progress = 60;
+                    break;
+                case 'sample-data':
+                    progress = 80;
+                    break;
+                case 'summary':
+                    progress = 100;
+                    break;
+            }
+            
+            progressFill.style.width = `${progress}%`;
+            document.querySelector('.progress-text span:last-child').textContent = `${progress}%`;
+        }
+        
+        function updateStepIndicators(step) {
+            const indicators = {
+                intro: 0,
+                platform: 1,
+                modules: 2,
+                styles: 3,
+                'sample-data': 4,
+                summary: 5
+            };
+            
+            const activeIndex = indicators[step];
+            const stepIndicators = document.querySelectorAll('.step-indicator');
+            
+            stepIndicators.forEach((indicator, index) => {
+                if (index <= activeIndex) {
+                    indicator.classList.add('active');
+                } else {
+                    indicator.classList.remove('active');
+                }
+            });
+        }
+        
+        function updateSummary() {
+            // Update store name
+            document.getElementById('summary-store-name').textContent = config.storeName || 'Not set';
+            
+            // Update platform info
+            document.getElementById('summary-platform').textContent = config.platform ? config.platform.charAt(0).toUpperCase() + config.platform.slice(1) : 'Not set';
+            document.getElementById('summary-version').textContent = config.version || 'Not set';
+            
+            // Here you would update other summary fields as needed
+            // For a complete implementation, you would update all fields in the summary section
+        }
+        
+        function openPreviewModal() {
+            previewModal.classList.add('active');
+            
+            // Update modal content based on current configuration
+            // This would include setting the colors, fonts, logos, etc. in the preview
+            // For this example, we'll just log the action
+            console.log('Opening preview modal with current configuration');
+        }
+        
+        function closePreviewModal() {
+            previewModal.classList.remove('active');
+        }
+    </script>
+</body>
+</html>
