@@ -6,20 +6,26 @@
     <title>Corefinity - Magento Store Configuration Wizard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;600;700&family=Montserrat:wght@300;400;500;700&family=Poppins:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #4F46E5;
-            --secondary-color: #1E293B;
-            --tertiary-color: #64748B;
-            --success-color: #10B981;
-            --warning-color: #F59E0B;
-            --error-color: #EF4444;
-            --background-color: #F8FAFC;
-            --card-color: #FFFFFF;
-            --border-color: #E2E8F0;
-            --text-primary: #1E293B;
-            --text-secondary: #64748B;
-            --sidebar-width: 280px;
+            --primary-color: #3f51b5;
+            --secondary-color: #5c6bc0;
+            --tertiary-color: #1a237e;
+            --accent-color: #7986cb;
+            --text-color: #333;
+            --light-gray: #f5f5f5;
+            --medium-gray: #e0e0e0;
+            --dark-gray: #757575;
+            --white: #ffffff;
+            --error-color: #d32f2f;
+            --success-color: #388e3c;
+            --preview-primary: #3f51b5;
+            --preview-secondary: #5c6bc0;
+            --preview-tertiary: #ffffff;
+            --preview-font: 'Inter', sans-serif;
+            --animation-duration: 0.4s;
+            --animation-easing: cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
         * {
@@ -30,510 +36,748 @@
         }
 
         body {
-            background-color: var(--background-color);
-            color: var(--text-primary);
-            display: flex;
-            min-height: 100vh;
+            background-color: var(--light-gray);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
         }
 
-        /* Sidebar Styles */
+        .container {
+            display: flex;
+            min-height: 100vh;
+            transition: all var(--animation-duration) var(--animation-easing);
+        }
+
         .sidebar {
-            width: var(--sidebar-width);
-            background-color: var(--card-color);
-            border-right: 1px solid var(--border-color);
+            width: 280px;
+            background-color: var(--secondary-color);
+            color: var(--white);
             padding: 2rem 1rem;
             display: flex;
             flex-direction: column;
-            height: 100vh;
-            position: fixed;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            transform: translateX(0);
+            transition: all var(--animation-duration) var(--animation-easing);
+            z-index: 100;
+        }
+
+        .sidebar.collapsed {
+            transform: translateX(-250px);
+        }
+
+        .sidebar-toggle {
+            position: absolute;
+            right: -15px;
+            top: 20px;
+            background: var(--white);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 101;
+        }
+
+        .sidebar-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        .sidebar-toggle i {
+            color: var(--primary-color);
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar.collapsed .sidebar-toggle i {
+            transform: rotate(180deg);
         }
 
         .sidebar-header {
             display: flex;
             align-items: center;
             margin-bottom: 2rem;
-            padding: 0 1rem;
+            padding: 0 0.5rem;
+            transition: all var(--animation-duration) var(--animation-easing);
         }
 
         .sidebar-header img {
             height: 40px;
-            margin-right: 0.75rem;
+            margin-right: 10px;
+            filter: brightness(0) invert(1);
+            transition: all 0.3s ease;
         }
 
-        .sidebar-header h2 {
-            font-size: 1.25rem;
+        .sidebar-header h1 {
+            font-size: 1.5rem;
             font-weight: 600;
-            color: var(--text-primary);
+            white-space: nowrap;
+            transition: all var(--animation-duration) var(--animation-easing);
+        }
+
+        .sidebar.collapsed .sidebar-header h1 {
+            opacity: 0;
+            width: 0;
         }
 
         .nav-menu {
             flex-grow: 1;
-            overflow-y: auto;
+            transition: all var(--animation-duration) var(--animation-easing);
         }
 
         .nav-item {
             display: flex;
             align-items: center;
             padding: 0.75rem 1rem;
-            margin-bottom: 0.25rem;
-            border-radius: 0.375rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            color: var(--text-secondary);
-            text-decoration: none;
-        }
-
-        .nav-item.active {
-            background-color: rgba(79, 70, 229, 0.1);
-            color: var(--primary-color);
-            font-weight: 500;
-        }
-
-        .nav-item:hover:not(.active) {
-            background-color: rgba(226, 232, 240, 0.5);
-        }
-
-        .nav-item .material-icons {
-            margin-right: 0.75rem;
-            font-size: 1.25rem;
-        }
-
-        .progress-container {
-            padding: 1.5rem 1rem 0;
-            margin-top: auto;
-        }
-
-        .progress-text {
-            display: flex;
-            justify-content: space-between;
             margin-bottom: 0.5rem;
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-        }
-
-        .progress-bar {
-            height: 6px;
-            background-color: var(--border-color);
-            border-radius: 3px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
             overflow: hidden;
         }
 
-        .progress-fill {
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 3px;
             height: 100%;
+            background-color: var(--white);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .nav-item.active::before {
+            transform: translateX(0);
+        }
+
+        .nav-item.active {
             background-color: var(--primary-color);
-            width: 33%;
-            transition: width 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-item:hover:not(.active) {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .nav-item i {
+            margin-right: 10px;
+            font-size: 1.25rem;
+            min-width: 24px;
+            transition: all var(--animation-duration) var(--animation-easing);
+        }
+
+        .nav-item span {
+            white-space: nowrap;
+            transition: all var(--animation-duration) var(--animation-easing);
+        }
+
+        .sidebar.collapsed .nav-item span {
+            opacity: 0;
+            width: 0;
         }
 
         .logout-btn {
             display: flex;
             align-items: center;
             padding: 0.75rem 1rem;
-            margin-top: 1rem;
-            color: var(--error-color);
+            margin-top: auto;
             cursor: pointer;
-            border-radius: 0.375rem;
-            transition: background-color 0.2s ease;
+            color: var(--white);
+            text-decoration: none;
+            transition: all var(--animation-duration) var(--animation-easing);
+            border-radius: 4px;
         }
 
         .logout-btn:hover {
-            background-color: rgba(239, 68, 68, 0.1);
+            background-color: rgba(255, 255, 255, 0.1);
         }
 
-        .logout-btn .material-icons {
-            margin-right: 0.75rem;
+        .logout-btn i {
+            margin-right: 10px;
+            transition: all var(--animation-duration) var(--animation-easing);
         }
 
-        /* Main Content Styles */
+        .sidebar.collapsed .logout-btn span {
+            opacity: 0;
+            width: 0;
+        }
+
         .main-content {
             flex-grow: 1;
-            margin-left: var(--sidebar-width);
             padding: 2rem;
-            min-height: 100vh;
+            overflow-y: auto;
+            transition: all var(--animation-duration) var(--animation-easing);
         }
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-
-        .header h1 {
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
-
-        .user-profile {
-            display: flex;
-            align-items: center;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: var(--primary-color);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 0.75rem;
-            font-weight: 500;
-        }
-
-        .user-name {
-            font-weight: 500;
-        }
-
-        /* Wizard Container */
-        .wizard-container {
-            background-color: var(--card-color);
-            border-radius: 0.5rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            padding: 2rem;
-            margin-bottom: 2rem;
+        .sidebar.collapsed ~ .main-content {
+            margin-left: -250px;
         }
 
         .wizard-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+            animation: fadeInDown 0.5s var(--animation-easing);
         }
 
         .wizard-title {
-            font-size: 1.25rem;
+            font-size: 1.75rem;
             font-weight: 600;
+            color: var(--secondary-color);
+            position: relative;
         }
 
-        .wizard-steps {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .step-indicator {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background-color: var(--border-color);
-        }
-
-        .step-indicator.active {
+        .wizard-title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 50px;
+            height: 3px;
             background-color: var(--primary-color);
+            border-radius: 3px;
         }
 
-        /* Wizard Content */
-        .wizard-content {
+        .progress-bar {
+            height: 8px;
+            background-color: var(--medium-gray);
+            border-radius: 4px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress {
+            height: 100%;
+            background-color: var(--primary-color);
+            width: 25%;
+            transition: width 0.5s var(--animation-easing);
+            position: relative;
+        }
+
+        .progress::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, 
+                rgba(255,255,255,0) 0%, 
+                rgba(255,255,255,0.3) 50%, 
+                rgba(255,255,255,0) 100%);
+            animation: progressShine 2s infinite;
+        }
+
+        .wizard-step {
             display: none;
+            animation: fadeIn 0.5s var(--animation-easing);
         }
 
-        .wizard-content.active {
+        .wizard-step.active {
             display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes progressShine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .step-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--secondary-color);
+            font-weight: 600;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .step-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background-color: var(--accent-color);
+        }
+
+        .step-description {
+            margin-bottom: 2rem;
+            color: var(--dark-gray);
+            animation: fadeIn 0.6s var(--animation-easing) 0.1s backwards;
         }
 
         .form-group {
             margin-bottom: 1.5rem;
+            animation: fadeIn 0.6s var(--animation-easing) 0.2s backwards;
         }
 
         .form-label {
             display: block;
             margin-bottom: 0.5rem;
             font-weight: 500;
-            color: var(--text-primary);
         }
 
         .form-control {
             width: 100%;
             padding: 0.75rem;
-            border: 1px solid var(--border-color);
-            border-radius: 0.375rem;
+            border: 1px solid var(--medium-gray);
+            border-radius: 4px;
             font-size: 1rem;
-            transition: border-color 0.2s ease;
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
 
         .form-control:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.2);
+            transform: translateY(-2px);
         }
 
-        .form-text {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            margin-top: 0.25rem;
-        }
-
-        /* Platform Selection */
         .platform-options {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
+            display: flex;
+            justify-content: space-between;
             margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1.5rem;
         }
 
         .platform-card {
-            border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
+            width: calc(33.333% - 1rem);
             padding: 1.5rem;
+            border: 1px solid var(--medium-gray);
+            border-radius: 8px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.4s var(--animation-easing);
+            background-color: var(--white);
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 0.6s var(--animation-easing) backwards;
+        }
+
+        .platform-card:nth-child(1) { animation-delay: 0.1s; }
+        .platform-card:nth-child(2) { animation-delay: 0.2s; }
+        .platform-card:nth-child(3) { animation-delay: 0.3s; }
+
+        .platform-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(63,81,181,0.1) 0%, rgba(255,255,255,0) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
         .platform-card:hover {
-            border-color: var(--primary-color);
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .platform-card:hover::after {
+            opacity: 1;
         }
 
         .platform-card.selected {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            background-color: rgba(63, 81, 181, 0.05);
+            box-shadow: 0 5px 15px rgba(63, 81, 181, 0.2);
+        }
+
+        .platform-card.selected::before {
+            content: '\e5ca';
+            font-family: 'Material Icons';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: var(--primary-color);
+            background-color: var(--white);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
 
         .platform-card img {
             height: 60px;
             margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .platform-card:hover img {
+            transform: scale(1.1);
         }
 
         .platform-card h3 {
-            font-size: 1rem;
-            font-weight: 600;
+            font-size: 1.25rem;
             margin-bottom: 0.5rem;
+            color: var(--secondary-color);
         }
 
-        /* Dependencies */
-        .dependencies-container {
-            background-color: var(--background-color);
-            border-radius: 0.5rem;
+        .version-select {
+            margin-bottom: 2rem;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .version-select.active {
+            display: block;
+        }
+
+        .dependencies {
+            background-color: var(--light-gray);
             padding: 1.5rem;
-            margin-top: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            display: none;
+            animation: fadeIn 0.5s ease;
         }
 
-        .dependencies-title {
-            font-size: 1rem;
-            font-weight: 600;
+        .dependencies.active {
+            display: block;
+        }
+
+        .dependencies h4 {
             margin-bottom: 1rem;
-            color: var(--text-primary);
+            font-size: 1.1rem;
+            color: var(--secondary-color);
         }
 
-        .dependencies-grid {
+        .dependency-list {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 1rem;
         }
 
         .dependency-item {
+            background-color: var(--white);
+            padding: 0.75rem;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
             display: flex;
-            align-items: center;
+            flex-direction: column;
         }
 
-        .dependency-icon {
-            width: 40px;
-            height: 40px;
-            background-color: var(--card-color);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 0.75rem;
-            color: var(--primary-color);
+        .dependency-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
-        .dependency-info h4 {
-            font-size: 0.875rem;
+        .dependency-item span:first-child {
             font-weight: 500;
-            margin-bottom: 0.125rem;
+            color: var(--secondary-color);
         }
 
-        .dependency-info p {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
+        .dependency-item span:last-child {
+            font-size: 0.9rem;
+            color: var(--dark-gray);
         }
 
-        /* Theme Selection */
         .theme-options {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1.5rem;
+            display: flex;
+            gap: 2rem;
             margin-bottom: 2rem;
+            flex-wrap: wrap;
         }
 
         .theme-card {
-            border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
+            width: calc(50% - 1rem);
+            border: 1px solid var(--medium-gray);
+            border-radius: 8px;
             overflow: hidden;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.4s var(--animation-easing);
+            background-color: var(--white);
+            position: relative;
+            animation: fadeIn 0.6s var(--animation-easing) backwards;
+        }
+
+        .theme-card:nth-child(1) { animation-delay: 0.1s; }
+        .theme-card:nth-child(2) { animation-delay: 0.2s; }
+
+        .theme-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(63,81,181,0.1) 0%, rgba(255,255,255,0) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1;
         }
 
         .theme-card:hover {
-            border-color: var(--primary-color);
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .theme-card:hover::before {
+            opacity: 1;
         }
 
         .theme-card.selected {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.2);
         }
 
-        .theme-image {
-            height: 180px;
-            background-color: #F1F5F9;
+        .theme-card.selected::after {
+            content: '\e5ca';
+            font-family: 'Material Icons';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: var(--primary-color);
+            background-color: var(--white);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--text-secondary);
+            font-size: 16px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 2;
         }
 
-        .theme-info {
-            padding: 1rem;
-            border-top: 1px solid var(--border-color);
+        .theme-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background-color: #f0f0f0;
+            transition: transform 0.5s ease;
         }
 
-        .theme-info h3 {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 0.25rem;
+        .theme-card:hover img {
+            transform: scale(1.05);
         }
 
-        .theme-info p {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
+        .theme-card-body {
+            padding: 1.5rem;
+            text-align: center;
+            position: relative;
+            z-index: 1;
         }
 
-        /* Color Picker */
+        .theme-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: var(--secondary-color);
+        }
+
         .color-picker-group {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
         }
 
         .color-picker {
-            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.3s ease;
+            animation: fadeIn 0.6s var(--animation-easing) backwards;
+        }
+
+        .color-picker:nth-child(1) { animation-delay: 0.1s; }
+        .color-picker:nth-child(2) { animation-delay: 0.2s; }
+        .color-picker:nth-child(3) { animation-delay: 0.3s; }
+
+        .color-picker:hover {
+            transform: translateY(-5px);
         }
 
         .color-picker-label {
-            display: block;
             margin-bottom: 0.5rem;
             font-weight: 500;
         }
 
-        .color-picker-input {
-            width: 100%;
-            height: 40px;
-            border-radius: 0.375rem;
-            border: 1px solid var(--border-color);
+        input[type="color"] {
+            width: 60px;
+            height: 60px;
+            border: none;
+            border-radius: 50%;
             cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
         }
 
-        /* Image Upload */
-        .image-upload-group {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
+        input[type="color"]:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
 
         .image-upload {
-            border: 1px dashed var(--border-color);
-            border-radius: 0.5rem;
-            padding: 1.5rem;
-            text-align: center;
-            transition: all 0.2s ease;
-        }
-
-        .image-upload:hover {
-            border-color: var(--primary-color);
-        }
-
-        .image-upload label {
-            display: block;
-            cursor: pointer;
-        }
-
-        .image-upload-icon {
-            font-size: 2rem;
-            color: var(--text-secondary);
-            margin-bottom: 0.5rem;
-        }
-
-        .image-upload-text {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            margin-bottom: 1rem;
+            margin-bottom: 2rem;
+            animation: fadeIn 0.6s var(--animation-easing) 0.2s backwards;
         }
 
         .image-upload-preview {
-            width: 100%;
-            height: 120px;
-            background-color: #F1F5F9;
-            border-radius: 0.25rem;
-            margin-top: 1rem;
-            overflow: hidden;
             display: flex;
-            align-items: center;
+            gap: 2rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .upload-container {
+            width: 150px;
+            height: 150px;
+            border: 2px dashed var(--medium-gray);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
             justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            background-color: var(--white);
         }
 
-        .image-upload-preview img {
-            max-width: 100%;
-            max-height: 100%;
+        .upload-container:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(63, 81, 181, 0.05);
+            transform: translateY(-3px);
+        }
+
+        .upload-container i {
+            font-size: 2rem;
+            color: var(--dark-gray);
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .upload-container:hover i {
+            color: var(--primary-color);
+            transform: scale(1.1);
+        }
+
+        .upload-container input[type="file"] {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .preview-image {
+            width: 150px;
+            height: 150px;
             object-fit: contain;
+            border-radius: 8px;
+            display: none;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
         }
 
-        /* Font Selection */
-        .font-selection {
-            margin-bottom: 1.5rem;
+        .preview-image:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .font-selector {
+            margin-bottom: 2rem;
+            animation: fadeIn 0.6s var(--animation-easing) 0.3s backwards;
+        }
+
+        .font-search {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--medium-gray);
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .font-search:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.2);
         }
 
         .font-options {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid var(--medium-gray);
+            border-radius: 4px;
+            padding: 0.5rem;
             margin-bottom: 1rem;
+            background-color: var(--white);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
         .font-option {
-            border: 1px solid var(--border-color);
-            border-radius: 0.375rem;
-            padding: 1rem;
+            padding: 0.75rem;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
+            border-radius: 4px;
+            margin-bottom: 0.25rem;
+        }
+
+        .font-option:last-child {
+            margin-bottom: 0;
         }
 
         .font-option:hover {
-            border-color: var(--primary-color);
+            background-color: var(--light-gray);
+            transform: translateX(5px);
         }
 
         .font-option.selected {
-            border-color: var(--primary-color);
-            background-color: rgba(79, 70, 229, 0.05);
-        }
-
-        .font-option .font-sample {
-            font-size: 1.25rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .font-option .font-name {
-            font-size: 0.875rem;
+            background-color: rgba(63, 81, 181, 0.1);
+            color: var(--primary-color);
             font-weight: 500;
+            box-shadow: 0 2px 5px rgba(63, 81, 181, 0.2);
         }
 
-        .use-default-font {
+        .checkbox-group {
             display: flex;
             align-items: center;
-            margin-top: 1rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
 
-        .use-default-font input {
+        .checkbox-group:hover {
+            color: var(--primary-color);
+        }
+
+        .checkbox-group input {
             margin-right: 0.5rem;
+            cursor: pointer;
         }
 
-        /* Modules Section */
-        .modules-container {
+        .module-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 1.5rem;
@@ -541,177 +785,279 @@
         }
 
         .module-card {
-            border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
+            border: 1px solid var(--medium-gray);
+            border-radius: 8px;
             padding: 1.5rem;
-            transition: all 0.2s ease;
+            transition: all 0.4s var(--animation-easing);
+            cursor: pointer;
+            background-color: var(--white);
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 0.6s var(--animation-easing) backwards;
+        }
+
+        .module-card:nth-child(1) { animation-delay: 0.1s; }
+        .module-card:nth-child(2) { animation-delay: 0.2s; }
+        .module-card:nth-child(3) { animation-delay: 0.3s; }
+        .module-card:nth-child(4) { animation-delay: 0.4s; }
+        .module-card:nth-child(5) { animation-delay: 0.5s; }
+        .module-card:nth-child(6) { animation-delay: 0.6s; }
+        .module-card:nth-child(7) { animation-delay: 0.7s; }
+        .module-card:nth-child(8) { animation-delay: 0.8s; }
+        .module-card:nth-child(9) { animation-delay: 0.9s; }
+
+        .module-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(63,81,181,0.1) 0%, rgba(255,255,255,0) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .module-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .module-card:hover::before {
+            opacity: 1;
         }
 
         .module-card.selected {
             border-color: var(--primary-color);
-            background-color: rgba(79, 70, 229, 0.05);
+            background-color: rgba(63, 81, 181, 0.05);
+            box-shadow: 0 5px 15px rgba(63, 81, 181, 0.2);
         }
 
-        .module-header {
+        .module-card.selected::after {
+            content: '\e5ca';
+            font-family: 'Material Icons';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: var(--primary-color);
+            background-color: var(--white);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .module-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 1rem;
+            align-items: center;
+            color: var(--secondary-color);
         }
 
-        .module-title {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 0.25rem;
+        .module-card h3 .material-icons {
+            color: var(--accent-color);
+            transition: all 0.3s ease;
         }
 
-        .module-description {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
+        .module-card.selected h3 .material-icons {
+            color: var(--primary-color);
+            transform: rotate(180deg);
+        }
+
+        .module-card p {
+            color: var(--dark-gray);
             margin-bottom: 1rem;
+            font-size: 0.9rem;
         }
 
         .module-license {
-            font-size: 0.75rem;
-            color: var(--warning-color);
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
+            display: none;
+            margin-top: 1rem;
+            animation: fadeIn 0.5s ease;
         }
 
-        .module-license .material-icons {
-            font-size: 1rem;
-            margin-right: 0.25rem;
+        .module-card.selected .module-license {
+            display: block;
         }
 
-        .module-toggle {
-            position: relative;
-            display: inline-block;
-            width: 44px;
-            height: 24px;
+        .license-input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid var(--medium-gray);
+            border-radius: 4px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
         }
 
-        .module-toggle input {
-            opacity: 0;
-            width: 0;
-            height: 0;
+        .license-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.2);
         }
 
-        .module-slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 24px;
-        }
-
-        .module-slider:before {
-            position: absolute;
-            content: "";
-            height: 16px;
-            width: 16px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-
-        input:checked + .module-slider {
-            background-color: var(--primary-color);
-        }
-
-        input:checked + .module-slider:before {
-            transform: translateX(20px);
-        }
-
-        /* Wizard Navigation */
-        .wizard-navigation {
+        .wizard-footer {
             display: flex;
             justify-content: space-between;
             margin-top: 2rem;
             padding-top: 1.5rem;
-            border-top: 1px solid var(--border-color);
+            border-top: 1px solid var(--medium-gray);
+            animation: fadeIn 0.6s var(--animation-easing) 0.4s backwards;
         }
 
         .btn {
             padding: 0.75rem 1.5rem;
-            border-radius: 0.375rem;
+            border-radius: 4px;
             font-size: 1rem;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
             border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 120px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn i {
+            transition: all 0.3s ease;
         }
 
         .btn-primary {
             background-color: var(--primary-color);
-            color: white;
+            color: var(--white);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
         .btn-primary:hover {
-            background-color: #4338CA;
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(63, 81, 181, 0.4);
         }
 
-        .btn-primary:disabled {
-            background-color: #C7D2FE;
-            cursor: not-allowed;
+        .btn-primary:hover::after {
+            opacity: 1;
         }
 
-        .btn-secondary {
-            background-color: white;
+        .btn-primary:hover i {
+            transform: translateX(3px);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary-color);
             color: var(--primary-color);
-            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
         }
 
-        .btn-secondary:hover {
-            background-color: #F8FAFC;
+        .btn-outline::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(63,81,181,0.1) 0%, rgba(255,255,255,0) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
-        /* Preview Modal */
-        .modal {
+        .btn-outline:hover {
+            background-color: rgba(63, 81, 181, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(63, 81, 181, 0.2);
+        }
+
+        .btn-outline:hover::after {
+            opacity: 1;
+        }
+
+        .btn-outline:hover i {
+            transform: translateX(-3px);
+        }
+
+        .btn-disabled {
+            background-color: var(--medium-gray);
+            color: var(--dark-gray);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .btn-disabled:hover {
+            transform: none;
+        }
+
+        .preview-modal {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
+            width: 100%;
+            height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
             z-index: 1000;
-            align-items: center;
             justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
         }
 
-        .modal.active {
+        .preview-modal.active {
             display: flex;
         }
 
         .modal-content {
-            background-color: white;
-            border-radius: 0.5rem;
+            background-color: var(--white);
             width: 90%;
-            max-width: 800px;
+            max-width: 1000px;
             max-height: 90vh;
+            border-radius: 8px;
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            transform: scale(0.9);
+            opacity: 0;
+            animation: modalOpen 0.3s var(--animation-easing) forwards;
+        }
+
+        @keyframes modalOpen {
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         .modal-header {
             padding: 1rem 1.5rem;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--medium-gray);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background-color: var(--light-gray);
         }
 
-        .modal-title {
+        .modal-header h3 {
             font-size: 1.25rem;
-            font-weight: 600;
+            color: var(--secondary-color);
         }
 
         .modal-close {
@@ -719,1285 +1065,2027 @@
             border: none;
             font-size: 1.5rem;
             cursor: pointer;
-            color: var(--text-secondary);
+            color: var(--dark-gray);
+            transition: all 0.3s ease;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .modal-close:hover {
+            background-color: var(--medium-gray);
+            color: var(--error-color);
+            transform: rotate(90deg);
         }
 
         .modal-tabs {
             display: flex;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--medium-gray);
+            background-color: var(--light-gray);
         }
 
         .modal-tab {
             padding: 0.75rem 1.5rem;
             cursor: pointer;
-            font-weight: 500;
-            color: var(--text-secondary);
-            border-bottom: 2px solid transparent;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .modal-tab::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--primary-color);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .modal-tab.active::after {
+            transform: scaleX(1);
         }
 
         .modal-tab.active {
             color: var(--primary-color);
-            border-bottom-color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .modal-tab:hover:not(.active) {
+            background-color: rgba(0, 0, 0, 0.05);
         }
 
         .modal-body {
-            padding: 1.5rem;
             flex-grow: 1;
+            padding: 1.5rem;
             overflow-y: auto;
         }
 
-        .preview-container {
-            border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
-            overflow: hidden;
+        .preview-desktop, .preview-mobile {
+            display: none;
+            animation: fadeIn 0.5s ease;
         }
 
-        .preview-navbar {
-            background-color: var(--secondary-color);
+        .preview-desktop.active, .preview-mobile.active {
+            display: block;
+        }
+
+        .preview-nav {
+            background-color: var(--preview-secondary);
             padding: 1rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            color: white;
+            color: var(--preview-tertiary);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1;
         }
 
-        .preview-logo img {
-            height: 30px;
+        .preview-logo {
+            height: 40px;
+            transition: all 0.3s ease;
         }
 
-        .preview-nav-links {
-            display: flex;
-            gap: 1.5rem;
+        .preview-logo:hover {
+            transform: scale(1.05);
+        }
+
+        .preview-nav-links a {
+            color: var(--preview-tertiary);
+            text-decoration: none;
+            margin-left: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+
+        .preview-nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--preview-tertiary);
+            transition: width 0.3s ease;
+        }
+
+        .preview-nav-links a:hover::after {
+            width: 100%;
         }
 
         .preview-hero {
-            background-color: #F1F5F9;
+            background-color: var(--preview-primary);
             padding: 3rem 1rem;
             text-align: center;
+            color: var(--white);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
         }
 
         .preview-hero h2 {
-            font-size: 1.75rem;
+            font-family: var(--preview-font);
+            font-size: 2rem;
             margin-bottom: 1rem;
-            color: var(--text-primary);
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .preview-hero p {
-            color: var(--text-secondary);
-            margin-bottom: 1.5rem;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
         }
 
         .preview-btn {
-            background-color: var(--primary-color);
-            color: white;
+            background-color: var(--white);
+            color: var(--preview-primary);
             padding: 0.75rem 1.5rem;
-            border-radius: 0.375rem;
+            border-radius: 4px;
+            text-decoration: none;
             display: inline-block;
             font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            margin-top: 1rem;
+        }
+
+        .preview-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
 
         .preview-products {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 1.5rem;
-            padding: 1.5rem;
+            padding: 2rem;
         }
 
         .preview-product {
-            border: 1px solid var(--border-color);
-            border-radius: 0.375rem;
+            border: 1px solid var(--medium-gray);
+            border-radius: 8px;
             overflow: hidden;
+            transition: all 0.3s ease;
+            background-color: var(--white);
         }
 
-        .preview-product-image {
-            height: 160px;
-            background-color: #E2E8F0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-secondary);
+        .preview-product:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .preview-product img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .preview-product:hover img {
+            transform: scale(1.05);
         }
 
         .preview-product-info {
             padding: 1rem;
         }
 
-        .preview-product-title {
-            font-weight: 600;
+        .preview-product h4 {
+            font-family: var(--preview-font);
             margin-bottom: 0.5rem;
+            color: var(--secondary-color);
         }
 
-        .preview-product-price {
-            color: var(--primary-color);
-            font-weight: 600;
+        .preview-product p {
+            color: var(--dark-gray);
             margin-bottom: 1rem;
         }
 
-        .preview-product-btn {
+        .preview-product .preview-btn {
+            background-color: var(--preview-primary);
+            color: var(--white);
             width: 100%;
-            padding: 0.5rem;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 0.25rem;
-            font-weight: 500;
-        }
-
-        .preview-footer {
-            background-color: var(--secondary-color);
-            padding: 1.5rem;
-            color: white;
             text-align: center;
         }
 
-        /* Responsive Styles */
-        @media (max-width: 1024px) {
-            .sidebar {
-                width: 240px;
+        .preview-mobile {
+            max-width: 375px;
+            margin: 0 auto;
+            border: 1px solid var(--medium-gray);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .preview-mobile-header {
+            background-color: var(--preview-secondary);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--preview-tertiary);
+        }
+
+        .preview-mobile-nav {
+            display: flex;
+            justify-content: space-around;
+            padding: 0.75rem;
+            background-color: var(--preview-secondary);
+            color: var(--preview-tertiary);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .preview-mobile-nav i {
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .preview-mobile-nav i:hover {
+            transform: scale(1.2);
+            color: var(--white);
+        }
+
+        .validation-error {
+            color: var(--error-color);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: none;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+
+        .validation-error.active {
+            display: block;
+        }
+
+        .summary-section {
+            animation: fadeIn 0.6s var(--animation-easing);
+        }
+
+        .summary-item {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .summary-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .summary-item strong {
+            color: var(--secondary-color);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: flex-start;
+            background-color: rgba(63, 81, 181, 0.1);
+            border-left: 4px solid var(--primary-color);
+            animation: fadeIn 0.6s var(--animation-easing);
+        }
+
+        .alert i {
+            margin-right: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .alert p {
+            margin-bottom: 0;
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: var(--primary-color);
+            opacity: 0;
+            z-index: 9999;
+            animation: confettiFall 5s linear forwards;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 1;
             }
-            .main-content {
-                margin-left: 240px;
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
             }
         }
 
-        @media (max-width: 768px) {
-            body {
-                flex-direction: column;
+        .success-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background-color: var(--white);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            z-index: 2000;
+            max-width: 90%;
+            width: 400px;
+            animation: successPopup 0.5s var(--animation-easing) forwards;
+        }
+
+        @keyframes successPopup {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+            80% { transform: translate(-50%, -50%) scale(1.1); }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        .success-message i {
+            font-size: 3rem;
+            color: var(--success-color);
+            margin-bottom: 1rem;
+            animation: bounce 1s ease infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .success-message h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--success-color);
+        }
+
+        .success-message p {
+            margin-bottom: 1.5rem;
+        }
+
+        .success-message .btn {
+            margin: 0 auto;
+        }
+
+        .success-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1999;
+            opacity: 0;
+            animation: fadeIn 0.3s ease forwards;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: var(--tertiary-color);
+            color: var(--white);
+            text-align: center;
+            border-radius: 6px;
+            padding: 0.5rem;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            font-size: 0.8rem;
+            font-weight: normal;
+        }
+
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: var(--tertiary-color) transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        @media (max-width: 1200px) {
+            .platform-card {
+                width: calc(50% - 1rem);
             }
-            .sidebar {
-                width: 100%;
-                height: auto;
-                position: relative;
-                padding: 1rem;
-            }
-            .main-content {
-                margin-left: 0;
-                padding: 1.5rem;
-            }
-            .platform-options, .theme-options, .image-upload-group {
-                grid-template-columns: 1fr;
-            }
+            
             .preview-products {
                 grid-template-columns: repeat(2, 1fr);
             }
         }
 
-        @media (max-width: 480px) {
-            .dependencies-grid {
-                grid-template-columns: 1fr;
+        @media (max-width: 992px) {
+            .container {
+                flex-direction: column;
             }
-            .preview-products {
-                grid-template-columns: 1fr;
+
+            .sidebar {
+                width: 100%;
+                padding: 1rem;
+                transform: translateX(0) !important;
             }
-            .modules-container {
-                grid-template-columns: 1fr;
+
+            .sidebar-toggle {
+                display: none;
             }
-            .wizard-navigation {
+
+            .sidebar-header {
+                margin-bottom: 1rem;
+            }
+
+            .nav-menu {
+                display: flex;
+                overflow-x: auto;
+                padding-bottom: 0.5rem;
+                flex-wrap: nowrap;
+            }
+
+            .nav-item {
+                white-space: nowrap;
+                margin-right: 0.5rem;
+                margin-bottom: 0;
+                flex-shrink: 0;
+            }
+
+            .nav-item span {
+                opacity: 1 !important;
+                width: auto !important;
+            }
+
+            .logout-btn {
+                display: none;
+            }
+
+            .main-content {
+                padding: 1.5rem;
+            }
+
+            .platform-options {
                 flex-direction: column;
                 gap: 1rem;
             }
+
+            .platform-card {
+                width: 100%;
+            }
+
+            .theme-options {
+                flex-direction: column;
+            }
+
+            .theme-card {
+                width: 100%;
+                margin-bottom: 1rem;
+            }
+
+            .color-picker-group {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .module-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .preview-products {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .wizard-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .wizard-title {
+                margin-bottom: 1rem;
+            }
+
+            .wizard-footer {
+                flex-direction: column-reverse;
+                gap: 1rem;
+            }
+
             .btn {
                 width: 100%;
+            }
+
+            .modal-tabs {
+                flex-wrap: wrap;
+            }
+
+            .modal-tab {
+                flex: 1;
+                text-align: center;
+                padding: 0.5rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .preview-mobile {
+                max-width: 100%;
+                border-radius: 0;
+            }
+            
+            .success-message {
+                width: 90%;
+                padding: 1rem;
+            }
+            
+            .success-message i {
+                font-size: 2rem;
+            }
+            
+            .success-message h3 {
+                font-size: 1.2rem;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Sidebar Navigation -->
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <img src="https://www.corefinity.com/images/logo.svg" alt="Corefinity Logo">
-          
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-toggle">
+                <i class="material-icons">chevron_left</i>
+            </div>
+            <div class="sidebar-header">
+                <img src="https://www.corefinity.com/images/logo.svg" alt="Corefinity Logo">
+                
+            </div>
+            <div class="nav-menu">
+                <div class="nav-item active" data-step="intro">
+                    <i class="material-icons">home</i>
+                    <span>Introduction</span>
+                </div>
+                <div class="nav-item" data-step="platform">
+                    <i class="material-icons">dns</i>
+                    <span>Platform</span>
+                </div>
+                <div class="nav-item" data-step="modules">
+                    <i class="material-icons">extension</i>
+                    <span>Modules</span>
+                </div>
+                <div class="nav-item" data-step="styles">
+                    <i class="material-icons">palette</i>
+                    <span>Styles</span>
+                </div>
+                <div class="nav-item" data-step="sample-data">
+                    <i class="material-icons">data_object</i>
+                    <span>Sample Data</span>
+                </div>
+                <div class="nav-item" data-step="summary">
+                    <i class="material-icons">check_circle</i>
+                    <span>Summary</span>
+                </div>
+            </div>
+            <a href="#" class="logout-btn">
+                <i class="material-icons">logout</i>
+                <span>Logout</span>
+            </a>
         </div>
-        <div class="nav-menu">
-            <a href="#" class="nav-item active" data-step="intro">
-                <span class="material-icons">home</span>
-                Introduction
-            </a>
-            <a href="#" class="nav-item" data-step="platform">
-                <span class="material-icons">dns</span>
-                Platform
-            </a>
-            <a href="#" class="nav-item" data-step="modules">
-                <span class="material-icons">extension</span>
-                Modules
-            </a>
-            <a href="#" class="nav-item" data-step="styles">
-                <span class="material-icons">palette</span>
-                Styles
-            </a>
-            <a href="#" class="nav-item" data-step="sample-data">
-                <span class="material-icons">dataset</span>
-                Sample Data
-            </a>
-            <a href="#" class="nav-item" data-step="summary">
-                <span class="material-icons">checklist</span>
-                Summary
-            </a>
-            <a href="#" class="nav-item" data-step="profile">
-                <span class="material-icons">person</span>
-                Profile
-            </a>
-            <a href="#" class="nav-item" data-step="my-builds">
-                <span class="material-icons">inventory</span>
-                My Builds
-            </a>
-        </div>
-        <div class="progress-container">
-            <div class="progress-text">
-                <span>Progress</span>
-                <span>33%</span>
+        <div class="main-content">
+            <div class="wizard-header">
+                <h2 class="wizard-title">Magento Store Configuration</h2>
+                <div>
+                    <button class="btn btn-outline" id="save-progress-btn">
+                        <i class="material-icons">save</i>
+                        Save Progress
+                    </button>
+                </div>
             </div>
             <div class="progress-bar">
-                <div class="progress-fill" style="width: 33%"></div>
+                <div class="progress" id="progress-bar"></div>
             </div>
-        </div>
-        <div class="logout-btn">
-            <span class="material-icons">logout</span>
-            Logout
-        </div>
-    </div>
 
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="header">
-            <h1>Magento Store Configuration Wizard</h1>
-            <div class="user-profile">
-                <div class="user-avatar">JD</div>
-                <div class="user-name">John Doe</div>
-            </div>
-        </div>
-
-        <!-- Wizard Container -->
-        <div class="wizard-container">
-            <!-- Introduction Step -->
-            <div class="wizard-content active" id="intro-step">
-                <div class="wizard-header">
-                    <div class="wizard-title">Introduction</div>
-                    <div class="wizard-steps">
-                        <div class="step-indicator active"></div>
-                        <div class="step-indicator"></div>
-                        <div class="step-indicator"></div>
-                        <div class="step-indicator"></div>
-                        <div class="step-indicator"></div>
-                        <div class="step-indicator"></div>
-                    </div>
-                </div>
+            <!-- Intro Step -->
+            <div class="wizard-step active" id="intro-step">
+                <h3 class="step-title">Welcome to Corefinity Store Configurator</h3>
+                <p class="step-description">
+                    This wizard will guide you through the process of configuring your Magento store. 
+                    Please provide a name for your configuration to get started.
+                </p>
                 <div class="form-group">
-                    <label for="store-name" class="form-label">Store Name</label>
-                    <input type="text" id="store-name" class="form-control" placeholder="Enter your store name">
-                    <p class="form-text">This name will be used to identify your store configuration.</p>
+                    <label for="config-name" class="form-label">Configuration Name</label>
+                    <input type="text" id="config-name" class="form-control" placeholder="e.g., My Online Store">
+                    <div class="validation-error" id="name-error">Please enter a configuration name</div>
                 </div>
-                <div class="wizard-navigation">
-                    <button class="btn btn-secondary" disabled>Back</button>
-                    <button class="btn btn-primary next-step" data-next="platform">Next Step</button>
+                <div class="alert">
+                    <i class="material-icons">info</i>
+                    <p>You can save your progress at any time and return later to complete the configuration.</p>
                 </div>
             </div>
 
             <!-- Platform Step -->
-            <div class="wizard-content" id="platform-step">
-                <div class="wizard-header">
-                    <div class="wizard-title">Platform Selection</div>
-                    <div class="wizard-steps">
-                        <div class="step-indicator"></div>
-                        <div class="step-indicator active"></div>
-                        <div class="step-indicator"></div>
-                        <div class="step-indicator"></div>
-                        <div class="step-indicator"></div>
-                        <div class="step-indicator"></div>
+            <div class="wizard-step" id="platform-step">
+                <h3 class="step-title">Select Your Platform</h3>
+                <p class="step-description">
+                    Choose the platform you want to use for your store. This will determine the available versions and dependencies.
+                </p>
+                <div class="platform-options">
+                    <div class="platform-card" data-platform="magento">
+                        <img src="https://cdn.worldvectorlogo.com/logos/magento-1.svg" alt="Magento Logo">
+                        <h3>Magento</h3>
+                        <p>Open-source eCommerce platform</p>
+                    </div>
+                    <div class="platform-card" data-platform="laravel">
+                        <img src="https://cdn.worldvectorlogo.com/logos/laravel-2.svg" alt="Laravel Logo">
+                        <h3>Laravel</h3>
+                        <p>PHP web application framework</p>
+                    </div>
+                    <div class="platform-card" data-platform="wordpress">
+                        <img src="https://cdn.worldvectorlogo.com/logos/wordpress-blue.svg" alt="WordPress Logo">
+                        <h3>WordPress</h3>
+                        <p>Content management system</p>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Select Your Platform</label>
-                    <div class="platform-options">
-                        <div class="platform-card" data-platform="magento">
-                            <img src="https://www.corefinity.com/wp-content/uploads/2023/05/magento-logo.png" alt="Magento Logo">
-                            <h3>Magento</h3>
-                            <p>Open-source e-commerce platform</p>
-                        </div>
-                        <div class="platform-card" data-platform="laravel">
-                            <img src="https://www.corefinity.com/wp-content/uploads/2023/05/laravel-logo.png" alt="Laravel Logo">
-                            <h3>Laravel</h3>
-                            <p>PHP web application framework</p>
-                        </div>
-                        <div class="platform-card" data-platform="wordpress">
-                            <img src="https://www.corefinity.com/wp-content/uploads/2023/05/wordpress-logo.png" alt="WordPress Logo">
-                            <h3>WordPress</h3>
-                            <p>Content management system</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group" id="version-select-group" style="display: none;">
-                    <label for="platform-version" class="form-label">Platform Version</label>
+                <div class="version-select" id="version-select">
+                    <label for="platform-version" class="form-label">Select Version</label>
                     <select id="platform-version" class="form-control">
-                        <option value="">Select a version</option>
+                        <option value="">-- Select a version --</option>
                     </select>
+                    <div class="validation-error" id="version-error">Please select a platform version</div>
                 </div>
-                <div class="dependencies-container" id="dependencies-container" style="display: none;">
-                    <h3 class="dependencies-title">Dependencies</h3>
-                    <div class="dependencies-grid" id="dependencies-grid">
-                        <!-- Dependencies will be populated here -->
-                    </div>
+                <div class="dependencies" id="dependencies">
+                    <h4>Required Dependencies</h4>
+                    <div class="dependency-list" id="dependency-list"></div>
                 </div>
-                <div class="wizard-navigation">
-                    <button class="btn btn-secondary prev-step" data-prev="intro">Back</button>
-                    <button class="btn btn-primary next-step" data-next="modules" disabled>Next Step</button>
+                <div class="alert">
+                    <i class="material-icons">info</i>
+                    <p>Our system will automatically check and install all required dependencies for your selected platform version.</p>
                 </div>
             </div>
 
             <!-- Modules Step -->
-            <div class="wizard-content" id="modules-step">
-                <div class="wizard-header">
-                    <div class="wizard-title">Modules</div>
-                    <div class="wizard-steps">
-                        <div class="step-indicator"></div>
-                        <div class="step-indicator"></div>
-                        <div class="step-indicator active"></div>
-                        <div class="step-indicator"></div>
-                        <div class="step-indicator"></div>
-                        <div class="step-indicator"></div>
+            <div class="wizard-step" id="modules-step">
+                <h3 class="step-title">Select Modules</h3>
+                <p class="step-description">
+                    Choose the modules you want to include in your store. Some modules may require a license key.
+                </p>
+                <div class="module-grid">
+                    <div class="module-card" data-module="payment">
+                        <h3>Payment Gateways <span class="material-icons">payment</span></h3>
+                        <p>Add multiple payment options including PayPal, Stripe, and credit card processing.</p>
+                        <div class="module-license">
+                            <label class="form-label">License Key (if required)</label>
+                            <input type="text" class="license-input" placeholder="Enter license key">
+                        </div>
                     </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Select Modules to Include</label>
-                    <p class="form-text">Choose which modules you want to include in your Magento store.</p>
-                    
-                    <div class="modules-container">
-                        <div class="module-card">
-                            <div class="module-header">
-                                <div>
-                                    <h3 class="module-title">Payment Module</h3>
-                                    <div class="module-license">
-                                        <span class="material-icons">warning</span>
-                                        Requires license key
-                                    </div>
-                                </div>
-                                <label class="module-toggle">
-                                    <input type="checkbox" class="module-checkbox">
-                                    <span class="module-slider"></span>
-                                </label>
-                            </div>
-                            <p class="module-description">Integrates multiple payment gateways including PayPal, Stripe, and credit card processing.</p>
+                    <div class="module-card" data-module="shipping">
+                        <h3>Shipping Methods <span class="material-icons">local_shipping</span></h3>
+                        <p>Integrate with major shipping carriers and provide real-time shipping rates.</p>
+                        <div class="module-license">
+                            <label class="form-label">License Key (if required)</label>
+                            <input type="text" class="license-input" placeholder="Enter license key">
                         </div>
-                        
-                        <div class="module-card">
-                            <div class="module-header">
-                                <div>
-                                    <h3 class="module-title">Shipping Module</h3>
-                                </div>
-                                <label class="module-toggle">
-                                    <input type="checkbox" class="module-checkbox">
-                                    <span class="module-slider"></span>
-                                </label>
-                            </div>
-                            <p class="module-description">Provides real-time shipping rates from major carriers and custom shipping options.</p>
+                    </div>
+                    <div class="module-card" data-module="seo">
+                        <h3>SEO Toolkit <span class="material-icons">search</span></h3>
+                        <p>Optimize your store for search engines with advanced SEO features.</p>
+                        <div class="module-license">
+                            <label class="form-label">License Key (if required)</label>
+                            <input type="text" class="license-input" placeholder="Enter license key">
                         </div>
-                        
-                        <div class="module-card">
-                            <div class="module-header">
-                                <div>
-                                    <h3 class="module-title">SEO Module</h3>
-                                </div>
-                                <label class="module-toggle">
-                                    <input type="checkbox" class="module-checkbox">
-                                    <span class="module-slider"></span>
-                                </label>
-                            </div>
-                            <p class="module-description">Advanced SEO tools including meta tag management, sitemap generation, and URL optimization.</p>
+                    </div>
+                    <div class="module-card" data-module="analytics">
+                        <h3>Analytics <span class="material-icons">analytics</span></h3>
+                        <p>Track visitor behavior and sales performance with integrated analytics.</p>
+                        <div class="module-license">
+                            <label class="form-label">License Key (if required)</label>
+                            <input type="text" class="license-input" placeholder="Enter license key">
                         </div>
-                        
-                        <div class="module-card">
-                            <div class="module-header">
-                                <div>
-                                    <h3 class="module-title">Analytics Module</h3>
-                                    <div class="module-license">
-                                        <span class="material-icons">warning</span>
-                                        Requires license key
-                                    </div>
-                                </div>
-                                <label class="module-toggle">
-                                    <input type="checkbox" class="module-checkbox">
-                                    <span class="module-slider"></span>
-                                </label>
-                            </div>
-                            <p class="module-description">Comprehensive analytics dashboard with sales tracking, customer behavior, and conversion metrics.</p>
+                    </div>
+                    <div class="module-card" data-module="security">
+                        <h3>Security Suite <span class="material-icons">security</span></h3>
+                        <p>Enhance your store's security with advanced protection features.</p>
+                        <div class="module-license">
+                            <label class="form-label">License Key (if required)</label>
+                            <input type="text" class="license-input" placeholder="Enter license key">
                         </div>
-                        
-                        <div class="module-card">
-                            <div class="module-header">
-                                <div>
-                                    <h3 class="module-title">Multi-Store Module</h3>
-                                </div>
-                                <label class="module-toggle">
-                                    <input type="checkbox" class="module-checkbox">
-                                    <span class="module-slider"></span>
-                                </label>
-                            </div>
-                            <p class="module-description">Manage multiple stores from a single admin panel with shared products and separate branding.</p>
+                    </div>
+                    <div class="module-card" data-module="multilingual">
+                        <h3>Multilingual <span class="material-icons">translate</span></h3>
+                        <p>Support multiple languages to reach a global audience.</p>
+                        <div class="module-license">
+                            <label class="form-label">License Key (if required)</label>
+                            <input type="text" class="license-input" placeholder="Enter license key">
                         </div>
-                        
-                        <div class="module-card">
-                            <div class="module-header">
-                                <div>
-                                    <h3 class="module-title">Customer Loyalty</h3>
-                                    <div class="module-license">
-                                        <span class="material-icons">warning</span>
-                                        Requires license key
-                                    </div>
-                                </div>
-                                <label class="module-toggle">
-                                    <input type="checkbox" class="module-checkbox">
-                                    <span class="module-slider"></span>
-                                </label>
-                            </div>
-                            <p class="module-description">Reward points system, referral program, and customer segmentation tools.</p>
+                    </div>
+                    <div class="module-card" data-module="blog">
+                        <h3>Blog <span class="material-icons">article</span></h3>
+                        <p>Add a blog to your store to engage customers and improve SEO.</p>
+                        <div class="module-license">
+                            <label class="form-label">License Key (if required)</label>
+                            <input type="text" class="license-input" placeholder="Enter license key">
+                        </div>
+                    </div>
+                    <div class="module-card" data-module="reviews">
+                        <h3>Product Reviews <span class="material-icons">rate_review</span></h3>
+                        <p>Allow customers to leave reviews and ratings for your products.</p>
+                        <div class="module-license">
+                            <label class="form-label">License Key (if required)</label>
+                            <input type="text" class="license-input" placeholder="Enter license key">
+                        </div>
+                    </div>
+                    <div class="module-card" data-module="wishlist">
+                        <h3>Wishlist <span class="material-icons">favorite</span></h3>
+                        <p>Let customers save products to their wishlist for later purchase.</p>
+                        <div class="module-license">
+                            <label class="form-label">License Key (if required)</label>
+                            <input type="text" class="license-input" placeholder="Enter license key">
                         </div>
                     </div>
                 </div>
-                <div class="wizard-navigation">
-                    <button class="btn btn-secondary prev-step" data-prev="platform">Back</button>
-                    <button class="btn btn-primary next-step" data-next="styles">Next Step</button>
+                <div class="alert">
+                    <i class="material-icons">info</i>
+                    <p>You can always add or remove modules later from your store's admin panel.</p>
                 </div>
             </div>
 
             <!-- Styles Step -->
-            <div class="wizard-content" id="styles-step">
-                <div class="wizard-header">
-                    <div class="wizard-title">Styles</div>
-                    <div class="wizard-steps">
-                        <div class="step-indicator"></div>
-                        <div class="step-indicator"></div>
-                        <div class="step-indicator"></div>
-                        <div class="step-indicator active"></div>
-                        <div class="step-indicator"></div>
-                        <div class="step-indicator"></div>
-                    </div>
-                </div>
+            <div class="wizard-step" id="styles-step">
+                <h3 class="step-title">Customize Your Store's Appearance</h3>
+                <p class="step-description">
+                    Select a theme and customize the visual style of your store.
+                </p>
                 
-                <div class="form-group">
-                    <label class="form-label">Select Theme</label>
-                    <div class="theme-options">
-                        <div class="theme-card selected" data-theme="luma">
-                            <div class="theme-image">
-                                [Luma Theme Preview]
-                            </div>
-                            <div class="theme-info">
-                                <h3>Luma</h3>
-                                <p>Default Magento theme with clean design and responsive layout</p>
-                            </div>
-                        </div>
-                        <div class="theme-card" data-theme="hyva">
-                            <div class="theme-image">
-                                [Hyva Theme Preview]
-                            </div>
-                            <div class="theme-info">
-                                <h3>Hyva</h3>
-                                <p>Modern theme with improved performance and PWA support</p>
-                            </div>
+                <h4 class="form-label">Select Theme</h4>
+                <div class="theme-options">
+                    <div class="theme-card selected" data-theme="luma">
+                        <img src="https://via.placeholder.com/400x200.png/3f51b5/ffffff?text=Luma+Theme" alt="Luma Theme Preview">
+                        <div class="theme-card-body">
+                            <h3>Luma</h3>
+                            <p>Magento's default theme with modern design</p>
                         </div>
                     </div>
-                    <button class="btn btn-secondary" id="preview-theme-btn" style="margin-top: 1rem;">
-                        <span class="material-icons" style="vertical-align: middle; margin-right: 0.5rem;">visibility</span>
-                        Preview Theme
-                    </button>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Color Scheme</label>
-                    <div class="color-picker-group">
-                        <div class="color-picker">
-                            <label class="color-picker-label">Primary Color</label>
-                            <input type="color" id="primary-color" class="color-picker-input" value="#4F46E5">
-                        </div>
-                        <div class="color-picker">
-                            <label class="color-picker-label">Secondary Color</label>
-                            <input type="color" id="secondary-color" class="color-picker-input" value="#1E293B">
-                        </div>
-                        <div class="color-picker">
-                            <label class="color-picker-label">Tertiary Color</label>
-                            <input type="color" id="tertiary-color" class="color-picker-input" value="#64748B">
+                    <div class="theme-card" data-theme="hyva">
+                        <img src="https://via.placeholder.com/400x200.png/5c6bc0/ffffff?text=Hyva+Theme" alt="Hyva Theme Preview">
+                        <div class="theme-card-body">
+                            <h3>Hyva</h3>
+                            <p>High-performance theme with Alpine.js</p>
                         </div>
                     </div>
-                    <button class="btn btn-secondary" id="preview-colors-btn">
-                        <span class="material-icons" style="vertical-align: middle; margin-right: 0.5rem;">visibility</span>
-                        Preview Colors
-                    </button>
                 </div>
+                <button class="btn btn-outline" id="preview-theme-btn">
+                    <i class="material-icons">visibility</i>
+                    Preview Theme
+                </button>
                 
-                <div class="form-group">
-                    <label class="form-label">Logo & Favicon</label>
-                    <div class="image-upload-group">
-                        <div class="image-upload">
-                            <label>
-                                <div class="image-upload-icon material-icons">image</div>
-                                <div class="image-upload-text">Upload Store Logo (PNG, JPG, max 2MB)</div>
-                                <input type="file" id="store-logo" accept="image/png, image/jpeg" style="display: none;">
-                                <div class="btn btn-secondary">Choose File</div>
-                            </label>
-                            <div class="image-upload-preview" id="logo-preview">
-                                [Logo Preview]
-                            </div>
+                <h4 class="form-label" style="margin-top: 2rem;">Color Scheme</h4>
+                <div class="color-picker-group">
+                    <div class="color-picker">
+                        <label class="color-picker-label">Primary Color</label>
+                        <input type="color" id="primary-color" value="#3f51b5">
+                    </div>
+                    <div class="color-picker">
+                        <label class="color-picker-label">Secondary Color</label>
+                        <input type="color" id="secondary-color" value="#5c6bc0">
+                    </div>
+                    <div class="color-picker">
+                        <label class="color-picker-label">Tertiary Color</label>
+                        <input type="color" id="tertiary-color" value="#333333">
+                    </div>
+                </div>
+                <button class="btn btn-outline" id="preview-colors-btn">
+                    <i class="material-icons">palette</i>
+                    Preview Colors
+                </button>
+                
+                <h4 class="form-label" style="margin-top: 2rem;">Logo & Favicon</h4>
+                <div class="image-upload">
+                    <label class="form-label">Store Logo (Recommended: 300x100px, PNG)</label>
+                    <div class="image-upload-preview">
+                        <div class="upload-container" id="logo-upload">
+                            <i class="material-icons">image</i>
+                            <span>Upload Logo</span>
+                            <input type="file" id="logo-input" accept="image/*">
                         </div>
-                        <div class="image-upload">
-                            <label>
-                                <div class="image-upload-icon material-icons">image</div>
-                                <div class="image-upload-text">Upload Favicon (ICO, PNG, max 256x256px)</div>
-                                <input type="file" id="store-favicon" accept="image/x-icon, image/png" style="display: none;">
-                                <div class="btn btn-secondary">Choose File</div>
-                            </label>
-                            <div class="image-upload-preview" id="favicon-preview">
-                                [Favicon Preview]
-                            </div>
+                        <img id="logo-preview" class="preview-image" alt="Logo Preview">
+                    </div>
+                </div>
+                <div class="image-upload">
+                    <label class="form-label">Favicon (Recommended: 64x64px, ICO or PNG)</label>
+                    <div class="image-upload-preview">
+                        <div class="upload-container" id="favicon-upload">
+                            <i class="material-icons">image</i>
+                            <span>Upload Favicon</span>
+                            <input type="file" id="favicon-input" accept="image/*">
+                        </div>
+                        <img id="favicon-preview" class="preview-image" alt="Favicon Preview">
+                    </div>
+                </div>
+                <button class="btn btn-outline" id="preview-logos-btn">
+                    <i class="material-icons">visibility</i>
+                    Preview Logos
+                </button>
+                
+                <h4 class="form-label" style="margin-top: 2rem;">Font Selection</h4>
+                <div class="font-selector">
+                    <input type="text" class="font-search" placeholder="Search fonts...">
+                    <div class="font-options">
+                        <div class="font-option selected" data-font="Inter">
+                            <div style="font-family: 'Inter'">Inter</div>
+                        </div>
+                        <div class="font-option" data-font="Roboto">
+                            <div style="font-family: 'Roboto'">Roboto</div>
+                        </div>
+                        <div class="font-option" data-font="Open Sans">
+                            <div style="font-family: 'Open Sans'">Open Sans</div>
+                        </div>
+                        <div class="font-option" data-font="Montserrat">
+                            <div style="font-family: 'Montserrat'">Montserrat</div>
+                        </div>
+                        <div class="font-option" data-font="Poppins">
+                            <div style="font-family: 'Poppins'">Poppins</div>
                         </div>
                     </div>
-                    <button class="btn btn-secondary" id="preview-logos-btn">
-                        <span class="material-icons" style="vertical-align: middle; margin-right: 0.5rem;">visibility</span>
-                        Preview Logos
-                    </button>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Font Selection</label>
-                    <div class="font-selection">
-                        <div class="form-group">
-                            <input type="text" id="font-search" class="form-control" placeholder="Search Google Fonts...">
-                        </div>
-                        <div class="font-options">
-                            <div class="font-option selected" data-font="Roboto">
-                                <div class="font-sample" style="font-family: 'Roboto'">Aa</div>
-                                <div class="font-name">Roboto</div>
-                            </div>
-                            <div class="font-option" data-font="Open Sans">
-                                <div class="font-sample" style="font-family: 'Open Sans'">Aa</div>
-                                <div class="font-name">Open Sans</div>
-                            </div>
-                            <div class="font-option" data-font="Montserrat">
-                                <div class="font-sample" style="font-family: 'Montserrat'">Aa</div>
-                                <div class="font-name">Montserrat</div>
-                            </div>
-                            <div class="font-option" data-font="Poppins">
-                                <div class="font-sample" style="font-family: 'Poppins'">Aa</div>
-                                <div class="font-name">Poppins</div>
-                            </div>
-                        </div>
-                        <div class="use-default-font">
-                            <input type="checkbox" id="use-default-font">
-                            <label for="use-default-font">Use default theme font</label>
-                        </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="use-default-font">
+                        <label for="use-default-font">Use default theme font</label>
                     </div>
-                    <button class="btn btn-secondary" id="preview-font-btn">
-                        <span class="material-icons" style="vertical-align: middle; margin-right: 0.5rem;">visibility</span>
-                        Preview Font
-                    </button>
                 </div>
+                <button class="btn btn-outline" id="preview-font-btn">
+                    <i class="material-icons">text_fields</i>
+                    Preview Font
+                </button>
                 
-                <div class="wizard-navigation">
-                    <button class="btn btn-secondary prev-step" data-prev="modules">Back</button>
-                    <button class="btn btn-primary next-step" data-next="sample-data">Next Step</button>
+                <div class="alert">
+                    <i class="material-icons">info</i>
+                    <p>All visual styles can be customized later through your store's theme settings.</p>
                 </div>
             </div>
 
             <!-- Sample Data Step -->
-            <div class="wizard-content" id="sample-data-step">
-                <div class="wizard-header">
-                    <div class="wizard-title">Sample Data</div>
-                    <div class="wizard-steps">
-                        <div class="step-indicator"></div>
-                        <div class="step-indicator"></div>
-                        <div class="step-indicator"></div>
-                        <div class="step-indicator"></div>
-                        <div class="step-indicator active"></div>
-                        <div class="step-indicator"></div>
-                    </div>
-                </div>
+            <div class="wizard-step" id="sample-data-step">
+                <h3 class="step-title">Sample Data</h3>
+                <p class="step-description">
+                    Would you like to install sample data to help you get started with your store?
+                </p>
                 <div class="form-group">
-                    <label class="form-label">Install Sample Data</label>
-                    <div class="form-check">
-                        <input type="checkbox" id="install-sample-data" class="form-check-input">
-                        <label for="install-sample-data" class="form-check-label">Include sample products, categories, and pages</label>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="install-sample-data">
+                        <label for="install-sample-data">Install sample data</label>
                     </div>
-                    <p class="form-text">Sample data helps you get started quickly by providing example products, categories, and CMS pages. You can remove them later.</p>
                 </div>
-                <div class="wizard-navigation">
-                    <button class="btn btn-secondary prev-step" data-prev="styles">Back</button>
-                    <button class="btn btn-primary next-step" data-next="summary">Next Step</button>
+                <div class="alert">
+                    <i class="material-icons">info</i>
+                    <p>Sample data includes demo products, categories, and pages to help you understand how your store works.</p>
                 </div>
             </div>
 
             <!-- Summary Step -->
-            <div class="wizard-content" id="summary-step">
-                <div class="wizard-header">
-                    <div class="wizard-title">Summary</div>
-                    <div class="wizard-steps">
-                        <div class="step-indicator"></div>
-                        <div class="step-indicator"></div>
-                        <div class="step-indicator"></div>
-                        <div class="step-indicator"></div>
-                        <div class="step-indicator"></div>
-                        <div class="step-indicator active"></div>
+            <div class="wizard-step" id="summary-step">
+                <h3 class="step-title">Review Your Configuration</h3>
+                <p class="step-description">
+                    Please review all your selections before completing the configuration.
+                </p>
+                <div class="summary-section">
+                    <h4 class="form-label">Basic Information</h4>
+                    <div class="summary-item">
+                        <strong>Configuration Name:</strong>
+                        <span id="summary-name">My Online Store</span>
+                    </div>
+                    
+                    <h4 class="form-label" style="margin-top: 1.5rem;">Platform</h4>
+                    <div class="summary-item">
+                        <strong>Selected Platform:</strong>
+                        <span id="summary-platform">Magento</span>
+                    </div>
+                    <div class="summary-item">
+                        <strong>Version:</strong>
+                        <span id="summary-version">2.4.7</span>
+                    </div>
+                    <div class="summary-item">
+                        <strong>Dependencies:</strong>
+                        <ul id="summary-dependencies">
+                            <li>PHP: 8.3</li>
+                            <li>MariaDB: 10.6</li>
+                            <li>Redis: 7.2</li>
+                            <li>OpenSearch: 2.11</li>
+                        </ul>
+                    </div>
+                    
+                    <h4 class="form-label" style="margin-top: 1.5rem;">Modules</h4>
+                    <div class="summary-item">
+                        <strong>Selected Modules:</strong>
+                        <ul id="summary-modules">
+                            <li>Payment Gateways</li>
+                            <li>Shipping Methods</li>
+                            <li>SEO Toolkit</li>
+                        </ul>
+                    </div>
+                    
+                    <h4 class="form-label" style="margin-top: 1.5rem;">Styles</h4>
+                    <div class="summary-item">
+                        <strong>Theme:</strong>
+                        <span id="summary-theme">Luma</span>
+                    </div>
+                    <div class="summary-item">
+                        <strong>Color Scheme:</strong>
+                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
+                            <div style="width: 30px; height: 30px; background-color: #3f51b5; border-radius: 4px;"></div>
+                            <div style="width: 30px; height: 30px; background-color: #5c6bc0; border-radius: 4px;"></div>
+                            <div style="width: 30px; height: 30px; background-color: #333333; border-radius: 4px;"></div>
+                        </div>
+                    </div>
+                    <div class="summary-item">
+                        <strong>Font:</strong>
+                        <span id="summary-font" style="font-family: 'Inter'">Inter</span>
+                    </div>
+                    <div class="summary-item">
+                        <strong>Logo & Favicon:</strong>
+                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
+                            <img id="summary-logo" src="https://via.placeholder.com/150x50?text=Logo" alt="Logo Preview" style="max-height: 50px;">
+                            <img id="summary-favicon" src="https://via.placeholder.com/50x50?text=Favicon" alt="Favicon Preview" style="max-height: 50px;">
+                        </div>
+                    </div>
+                    
+                    <h4 class="form-label" style="margin-top: 1.5rem;">Sample Data</h4>
+                    <div class="summary-item">
+                        <strong>Install Sample Data:</strong>
+                        <span id="summary-sample-data">Yes</span>
                     </div>
                 </div>
-                <div class="form-group">
-                    <h3 style="margin-bottom: 1.5rem;">Review Your Configuration</h3>
-                    
-                    <div class="summary-section">
-                        <h4 style="margin-bottom: 1rem; color: var(--primary-color);">Basic Information</h4>
-                        <div class="summary-item">
-                            <span class="summary-label">Store Name:</span>
-                            <span class="summary-value" id="summary-store-name">My Store</span>
-                        </div>
-                    </div>
-                    
-                    <div class="summary-section" style="margin-top: 2rem;">
-                        <h4 style="margin-bottom: 1rem; color: var(--primary-color);">Platform</h4>
-                        <div class="summary-item">
-                            <span class="summary-label">Platform:</span>
-                            <span class="summary-value" id="summary-platform">Magento</span>
-                        </div>
-                        <div class="summary-item">
-                            <span class="summary-label">Version:</span>
-                            <span class="summary-value" id="summary-version">2.4.7</span>
-                        </div>
-                        <div class="summary-item">
-                            <span class="summary-label">Dependencies:</span>
-                            <div class="summary-value">
-                                <div>PHP: 8.3</div>
-                                <div>MariaDB: 10.6</div>
-                                <div>Redis: 7.2</div>
-                                <div>OpenSearch: 2.11</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="summary-section" style="margin-top: 2rem;">
-                        <h4 style="margin-bottom: 1rem; color: var(--primary-color);">Modules</h4>
-                        <div class="summary-value">
-                            <div>Payment Module</div>
-                            <div>Shipping Module</div>
-                            <div>SEO Module</div>
-                        </div>
-                    </div>
-                    
-                    <div class="summary-section" style="margin-top: 2rem;">
-                        <h4 style="margin-bottom: 1rem; color: var(--primary-color);">Styles</h4>
-                        <div class="summary-item">
-                            <span class="summary-label">Theme:</span>
-                            <span class="summary-value">Luma</span>
-                        </div>
-                        <div class="summary-item">
-                            <span class="summary-label">Colors:</span>
-                            <div class="summary-value">
-                                <div style="display: flex; align-items: center;">
-                                    <div style="width: 20px; height: 20px; background-color: #4F46E5; margin-right: 0.5rem; border-radius: 3px;"></div>
-                                    Primary: #4F46E5
-                                </div>
-                                <div style="display: flex; align-items: center;">
-                                    <div style="width: 20px; height: 20px; background-color: #1E293B; margin-right: 0.5rem; border-radius: 3px;"></div>
-                                    Secondary: #1E293B
-                                </div>
-                                <div style="display: flex; align-items: center;">
-                                    <div style="width: 20px; height: 20px; background-color: #64748B; margin-right: 0.5rem; border-radius: 3px;"></div>
-                                    Tertiary: #64748B
-                                </div>
-                            </div>
-                        </div>
-                        <div class="summary-item">
-                            <span class="summary-label">Font:</span>
-                            <span class="summary-value">Roboto</span>
-                        </div>
-                    </div>
-                    
-                    <div class="summary-section" style="margin-top: 2rem;">
-                        <h4 style="margin-bottom: 1rem; color: var(--primary-color);">Sample Data</h4>
-                        <div class="summary-item">
-                            <span class="summary-label">Include Sample Data:</span>
-                            <span class="summary-value">Yes</span>
-                        </div>
-                    </div>
+                <div class="alert">
+                    <i class="material-icons">info</i>
+                    <p>Review all settings carefully. Once deployed, some changes may require technical assistance.</p>
                 </div>
-                <div class="wizard-navigation">
-                    <button class="btn btn-secondary prev-step" data-prev="sample-data">Back</button>
-                    <button class="btn btn-primary" id="build-deploy-btn">Build & Deploy Site</button>
-                </div>
+            </div>
+
+            <div class="wizard-footer">
+                <button class="btn btn-outline" id="prev-btn" disabled>
+                    <i class="material-icons">chevron_left</i>
+                    Previous
+                </button>
+                <button class="btn btn-primary" id="next-btn">
+                    Next Step
+                    <i class="material-icons">chevron_right</i>
+                </button>
             </div>
         </div>
     </div>
 
     <!-- Preview Modal -->
-    <div class="modal" id="preview-modal">
+    <div class="preview-modal" id="preview-modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">Theme Preview</h3>
-                <button class="modal-close">&times;</button>
+                <h3>Store Preview</h3>
+                <button class="modal-close" id="modal-close">&times;</button>
             </div>
             <div class="modal-tabs">
-                <div class="modal-tab active" data-view="desktop">Desktop</div>
-                <div class="modal-tab" data-view="mobile">Mobile</div>
+                <div class="modal-tab active" data-tab="desktop">Desktop</div>
+                <div class="modal-tab" data-tab="mobile">Mobile</div>
             </div>
             <div class="modal-body">
-                <div class="preview-container">
-                    <div class="preview-navbar">
-                        <div class="preview-logo">
-                            <img src="https://www.corefinity.com/wp-content/uploads/2023/05/corefinity-logo-white.svg" alt="Store Logo">
-                        </div>
+                <div class="preview-desktop active">
+                    <div class="preview-nav">
+                        <img src="https://via.placeholder.com/150x50?text=Logo" alt="Store Logo" class="preview-logo" id="preview-desktop-logo">
                         <div class="preview-nav-links">
-                            <div>Home</div>
-                            <div>Products</div>
-                            <div>Categories</div>
-                            <div>About</div>
-                            <div>Contact</div>
+                            <a href="#">Home</a>
+                            <a href="#">Shop</a>
+                            <a href="#">Categories</a>
+                            <a href="#">About</a>
+                            <a href="#">Contact</a>
                         </div>
                     </div>
                     <div class="preview-hero">
                         <h2>Welcome to Our Store</h2>
-                        <p>Discover our amazing collection of products designed to meet your needs and exceed your expectations.</p>
-                        <div class="preview-btn">Shop Now</div>
+                        <p>Discover our amazing products and great deals</p>
+                        <a href="#" class="preview-btn">Shop Now</a>
                     </div>
                     <div class="preview-products">
                         <div class="preview-product">
-                            <div class="preview-product-image">Product Image</div>
+                            <img src="https://via.placeholder.com/300x200?text=Product+1" alt="Product 1">
                             <div class="preview-product-info">
-                                <div class="preview-product-title">Premium Product</div>
-                                <div class="preview-product-price">$99.99</div>
-                                <button class="preview-product-btn">Add to Cart</button>
+                                <h4>Premium Product</h4>
+                                <p>$99.99</p>
+                                <a href="#" class="preview-btn">Add to Cart</a>
                             </div>
                         </div>
                         <div class="preview-product">
-                            <div class="preview-product-image">Product Image</div>
+                            <img src="https://via.placeholder.com/300x200?text=Product+2" alt="Product 2">
                             <div class="preview-product-info">
-                                <div class="preview-product-title">Standard Product</div>
-                                <div class="preview-product-price">$49.99</div>
-                                <button class="preview-product-btn">Add to Cart</button>
+                                <h4>Standard Product</h4>
+                                <p>$49.99</p>
+                                <a href="#" class="preview-btn">Add to Cart</a>
                             </div>
                         </div>
                         <div class="preview-product">
-                            <div class="preview-product-image">Product Image</div>
+                            <img src="https://via.placeholder.com/300x200?text=Product+3" alt="Product 3">
                             <div class="preview-product-info">
-                                <div class="preview-product-title">Basic Product</div>
-                                <div class="preview-product-price">$29.99</div>
-                                <button class="preview-product-btn">Add to Cart</button>
+                                <h4>Basic Product</h4>
+                                <p>$29.99</p>
+                                <a href="#" class="preview-btn">Add to Cart</a>
                             </div>
                         </div>
                     </div>
-                    <div class="preview-footer">
-                        &copy; 2023 My Store. All rights reserved.
+                </div>
+                <div class="preview-mobile">
+                    <div class="preview-mobile-header">
+                        <img src="https://via.placeholder.com/100x30?text=Logo" alt="Store Logo" class="preview-logo" id="preview-mobile-logo">
+                        <i class="material-icons">search</i>
+                    </div>
+                    <div style="height: 200px; background-color: var(--preview-primary); display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center; padding: 1rem;">
+                        <h3 style="font-family: var(--preview-font); margin-bottom: 0.5rem;">Welcome to Our Store</h3>
+                        <p style="margin-bottom: 1rem;">Discover our amazing products</p>
+                        <a href="#" style="background-color: white; color: var(--preview-primary); padding: 0.5rem 1rem; border-radius: 4px; text-decoration: none; font-weight: 500;">Shop Now</a>
+                    </div>
+                    <div style="padding: 1rem;">
+                        <div style="margin-bottom: 1rem; border: 1px solid var(--medium-gray); border-radius: 8px; overflow: hidden;">
+                            <img src="https://via.placeholder.com/300x200?text=Product+1" alt="Product 1" style="width: 100%;">
+                            <div style="padding: 0.75rem;">
+                                <h4 style="font-family: var(--preview-font); margin-bottom: 0.25rem;">Premium Product</h4>
+                                <p style="color: var(--dark-gray); margin-bottom: 0.5rem;">$99.99</p>
+                                <a href="#" style="background-color: var(--preview-primary); color: white; padding: 0.5rem; border-radius: 4px; text-decoration: none; display: block; text-align: center; font-weight: 500;">Add to Cart</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="preview-mobile-nav">
+                        <i class="material-icons">home</i>
+                        <i class="material-icons">shopping_cart</i>
+                        <i class="material-icons">category</i>
+                        <i class="material-icons">person</i>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Success Message -->
+    <div class="success-overlay" id="success-overlay"></div>
+    <div class="success-message" id="success-message">
+        <i class="material-icons">check_circle</i>
+        <h3>Configuration Complete!</h3>
+        <p>Your Magento store is being deployed. You'll receive a notification when it's ready.</p>
+        <button class="btn btn-primary" id="success-ok-btn">OK</button>
+    </div>
+
     <script>
-        // Platform Data
+        // Enhanced Platform data with descriptions
         const platformData = {
             magento: {
+                name: "Magento",
+                description: "Open-source eCommerce platform with enterprise-grade features",
+                logo: "https://cdn.worldvectorlogo.com/logos/magento-1.svg",
                 versions: {
                     '2.4.7': {
                         php: '8.3',
                         mariadb: '10.6',
                         redis: '7.2',
-                        opensearch: '2.11'
+                        opensearch: '2.11',
+                        releaseDate: 'March 2024',
+                        eolDate: 'March 2026'
                     },
                     '2.4.6': {
                         php: '8.2',
                         mariadb: '10.5',
                         redis: '7.0',
-                        opensearch: '2.9'
+                        opensearch: '2.9',
+                        releaseDate: 'October 2023',
+                        eolDate: 'October 2025'
                     },
                     '2.4.5': {
                         php: '8.1',
                         mariadb: '10.4',
                         redis: '6.2',
-                        opensearch: '2.6'
+                        opensearch: '2.6',
+                        releaseDate: 'August 2022',
+                        eolDate: 'August 2024'
                     },
                     '2.4.4': {
                         php: '8.0',
                         mariadb: '10.4',
                         redis: '6.0',
-                        opensearch: '2.4'
+                        opensearch: '2.4',
+                        releaseDate: 'April 2022',
+                        eolDate: 'April 2024'
                     },
                     '2.3.7': {
                         php: '7.4',
                         mariadb: '10.3',
                         redis: '5.0',
-                        opensearch: 'N/A'
+                        opensearch: 'N/A',
+                        releaseDate: 'November 2021',
+                        eolDate: 'November 2023'
                     }
                 }
             },
             laravel: {
+                name: "Laravel",
+                description: "PHP web application framework with elegant syntax",
+                logo: "https://cdn.worldvectorlogo.com/logos/laravel-2.svg",
                 versions: {
                     '11': {
                         php: '8.2',
                         mariadb: '10.6',
                         redis: '7.2',
-                        opensearch: 'N/A'
+                        opensearch: 'N/A',
+                        releaseDate: 'March 2024',
+                        eolDate: 'March 2026'
                     },
                     '10': {
                         php: '8.1',
                         mariadb: '10.4',
                         redis: '6.2',
-                        opensearch: 'N/A'
+                        opensearch: 'N/A',
+                        releaseDate: 'February 2023',
+                        eolDate: 'February 2025'
                     },
                     '9': {
                         php: '8.0',
                         mariadb: '10.3',
                         redis: '6.0',
-                        opensearch: 'N/A'
+                        opensearch: 'N/A',
+                        releaseDate: 'February 2022',
+                        eolDate: 'February 2024'
                     },
                     '8': {
                         php: '7.4',
                         mariadb: '10.3',
                         redis: '5.0',
-                        opensearch: 'N/A'
+                        opensearch: 'N/A',
+                        releaseDate: 'September 2020',
+                        eolDate: 'September 2022'
                     },
                     '7': {
                         php: '7.3',
                         mariadb: '10.2',
                         redis: '5.0',
-                        opensearch: 'N/A'
+                        opensearch: 'N/A',
+                        releaseDate: 'March 2020',
+                        eolDate: 'March 2022'
                     }
                 }
             },
             wordpress: {
+                name: "WordPress",
+                description: "Content management system powering over 40% of the web",
+                logo: "https://cdn.worldvectorlogo.com/logos/wordpress-blue.svg",
                 versions: {
                     '6.5': {
                         php: '8.1',
                         mariadb: '10.4',
                         redis: '7.0',
-                        opensearch: 'N/A'
+                        opensearch: 'N/A',
+                        releaseDate: 'April 2024',
+                        eolDate: 'April 2026'
                     },
                     '6.4': {
                         php: '8.0',
                         mariadb: '10.3',
                         redis: '6.0',
-                        opensearch: 'N/A'
+                        opensearch: 'N/A',
+                        releaseDate: 'November 2023',
+                        eolDate: 'November 2025'
                     },
                     '6.3': {
                         php: '7.4',
                         mariadb: '10.2',
                         redis: '5.0',
-                        opensearch: 'N/A'
+                        opensearch: 'N/A',
+                        releaseDate: 'August 2022',
+                        eolDate: 'August 2024'
                     },
                     '6.2': {
                         php: '7.3',
                         mariadb: '10.1',
                         redis: '5.0',
-                        opensearch: 'N/A'
+                        opensearch: 'N/A',
+                        releaseDate: 'March 2022',
+                        eolDate: 'March 2024'
                     },
                     '5.9': {
                         php: '7.2',
                         mariadb: '10.0',
                         redis: '4.0',
-                        opensearch: 'N/A'
+                        opensearch: 'N/A',
+                        releaseDate: 'January 2022',
+                        eolDate: 'January 2024'
                     }
                 }
             }
         };
 
-        // Current configuration
-        const config = {
-            storeName: '',
-            platform: '',
-            version: '',
-            modules: [],
-            theme: 'luma',
-            primaryColor: '#4F46E5',
-            secondaryColor: '#1E293B',
-            tertiaryColor: '#64748B',
-            font: 'Roboto',
-            useDefaultFont: false,
-            logo: null,
-            favicon: null,
-            sampleData: false
+        // Module data with descriptions and license requirements
+        const moduleData = {
+            payment: {
+                name: "Payment Gateways",
+                description: "Add multiple payment options including PayPal, Stripe, and credit card processing",
+                icon: "payment",
+                requiresLicense: false
+            },
+            shipping: {
+                name: "Shipping Methods",
+                description: "Integrate with major shipping carriers and provide real-time shipping rates",
+                icon: "local_shipping",
+                requiresLicense: false
+            },
+            seo: {
+                name: "SEO Toolkit",
+                description: "Optimize your store for search engines with advanced SEO features",
+                icon: "search",
+                requiresLicense: true
+            },
+            analytics: {
+                name: "Analytics",
+                description: "Track visitor behavior and sales performance with integrated analytics",
+                icon: "analytics",
+                requiresLicense: true
+            },
+            security: {
+                name: "Security Suite",
+                description: "Enhance your store's security with advanced protection features",
+                icon: "security",
+                requiresLicense: true
+            },
+            multilingual: {
+                name: "Multilingual",
+                description: "Support multiple languages to reach a global audience",
+                icon: "translate",
+                requiresLicense: false
+            },
+            blog: {
+                name: "Blog",
+                description: "Add a blog to your store to engage customers and improve SEO",
+                icon: "article",
+                requiresLicense: false
+            },
+            reviews: {
+                name: "Product Reviews",
+                description: "Allow customers to leave reviews and ratings for your products",
+                icon: "rate_review",
+                requiresLicense: false
+            },
+            wishlist: {
+                name: "Wishlist",
+                description: "Let customers save products to their wishlist for later purchase",
+                icon: "favorite",
+                requiresLicense: false
+            }
         };
 
-        // DOM Elements
-        const storeNameInput = document.getElementById('store-name');
+        // Theme data
+        const themeData = {
+            luma: {
+                name: "Luma",
+                description: "Magento's default theme with modern design",
+                image: "https://via.placeholder.com/400x200.png/3f51b5/ffffff?text=Luma+Theme",
+                defaultFont: "Inter"
+            },
+            hyva: {
+                name: "Hyva",
+                description: "High-performance theme with Alpine.js",
+                image: "https://via.placeholder.com/400x200.png/5c6bc0/ffffff?text=Hyva+Theme",
+                defaultFont: "Poppins"
+            }
+        };
+
+        // Wizard steps
+        const steps = ['intro', 'platform', 'modules', 'styles', 'sample-data', 'summary'];
+        let currentStep = 0;
+        let selectedPlatform = null;
+        let selectedVersion = null;
+        let selectedTheme = 'luma';
+        let selectedFont = 'Inter';
+        let selectedModules = [];
+        let useDefaultFont = false;
+        let configName = '';
+        let installSampleData = false;
+
+        // DOM elements
+        const progressBar = document.getElementById('progress-bar');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const configNameInput = document.getElementById('config-name');
+        const nameError = document.getElementById('name-error');
+        const versionError = document.getElementById('version-error');
         const platformCards = document.querySelectorAll('.platform-card');
-        const versionSelect = document.getElementById('platform-version');
-        const versionSelectGroup = document.getElementById('version-select-group');
-        const dependenciesContainer = document.getElementById('dependencies-container');
-        const dependenciesGrid = document.getElementById('dependencies-grid');
-        const nextStepButtons = document.querySelectorAll('.next-step');
-        const prevStepButtons = document.querySelectorAll('.prev-step');
-        const navItems = document.querySelectorAll('.nav-item');
-        const wizardContents = document.querySelectorAll('.wizard-content');
-        const progressFill = document.querySelector('.progress-fill');
+        const versionSelect = document.getElementById('version-select');
+        const platformVersionSelect = document.getElementById('platform-version');
+        const dependenciesSection = document.getElementById('dependencies');
+        const dependencyList = document.getElementById('dependency-list');
         const themeCards = document.querySelectorAll('.theme-card');
-        const primaryColorInput = document.getElementById('primary-color');
-        const secondaryColorInput = document.getElementById('secondary-color');
-        const tertiaryColorInput = document.getElementById('tertiary-color');
-        const storeLogoInput = document.getElementById('store-logo');
-        const storeFaviconInput = document.getElementById('store-favicon');
+        const previewThemeBtn = document.getElementById('preview-theme-btn');
+        const primaryColor = document.getElementById('primary-color');
+        const secondaryColor = document.getElementById('secondary-color');
+        const tertiaryColor = document.getElementById('tertiary-color');
+        const previewColorsBtn = document.getElementById('preview-colors-btn');
+        const logoUpload = document.getElementById('logo-upload');
+        const logoInput = document.getElementById('logo-input');
         const logoPreview = document.getElementById('logo-preview');
+        const faviconUpload = document.getElementById('favicon-upload');
+        const faviconInput = document.getElementById('favicon-input');
         const faviconPreview = document.getElementById('favicon-preview');
+        const previewLogosBtn = document.getElementById('preview-logos-btn');
         const fontOptions = document.querySelectorAll('.font-option');
         const useDefaultFontCheckbox = document.getElementById('use-default-font');
-        const installSampleDataCheckbox = document.getElementById('install-sample-data');
-        const previewModal = document.getElementById('preview-modal');
-        const modalClose = document.querySelector('.modal-close');
-        const modalTabs = document.querySelectorAll('.modal-tab');
-        const buildDeployBtn = document.getElementById('build-deploy-btn');
-        const previewThemeBtn = document.getElementById('preview-theme-btn');
-        const previewColorsBtn = document.getElementById('preview-colors-btn');
-        const previewLogosBtn = document.getElementById('preview-logos-btn');
         const previewFontBtn = document.getElementById('preview-font-btn');
+        const moduleCards = document.querySelectorAll('.module-card');
+        const previewModal = document.getElementById('preview-modal');
+        const modalClose = document.getElementById('modal-close');
+        const modalTabs = document.querySelectorAll('.modal-tab');
+        const previewDesktop = document.querySelector('.preview-desktop');
+        const previewMobile = document.querySelector('.preview-mobile');
+        const previewDesktopLogo = document.getElementById('preview-desktop-logo');
+        const previewMobileLogo = document.getElementById('preview-mobile-logo');
+        const navItems = document.querySelectorAll('.nav-item');
+        const saveProgressBtn = document.getElementById('save-progress-btn');
+        const installSampleDataCheckbox = document.getElementById('install-sample-data');
+        const successOverlay = document.getElementById('success-overlay');
+        const successMessage = document.getElementById('success-message');
+        const successOkBtn = document.getElementById('success-ok-btn');
+        const sidebar = document.querySelector('.sidebar');
+        const sidebarToggle = document.querySelector('.sidebar-toggle');
 
-        // Event Listeners
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize the wizard
-            updateSummary();
-            
-            // Store name input
-            storeNameInput.addEventListener('input', function() {
-                config.storeName = this.value;
-                updateSummary();
-            });
-            
-            // Platform selection
+        // Initialize tooltips
+        function initTooltips() {
             platformCards.forEach(card => {
-                card.addEventListener('click', function() {
-                    // Remove selected class from all cards
-                    platformCards.forEach(c => c.classList.remove('selected'));
-                    
-                    // Add selected class to clicked card
-                    this.classList.add('selected');
-                    
-                    // Set the platform in config
-                    const platform = this.dataset.platform;
-                    config.platform = platform;
-                    
-                    // Show version select
-                    versionSelectGroup.style.display = 'block';
-                    
-                    // Populate versions
-                    versionSelect.innerHTML = '<option value="">Select a version</option>';
-                    const versions = platformData[platform].versions;
-                    
-                    for (const version in versions) {
-                        const option = document.createElement('option');
-                        option.value = version;
-                        option.textContent = version;
-                        versionSelect.appendChild(option);
-                    }
-                    
-                    // Enable next step button if version is already selected
-                    const nextStepBtn = document.querySelector('#platform-step .next-step');
-                    nextStepBtn.disabled = !config.version;
-                    
-                    updateSummary();
-                });
+                const platform = card.dataset.platform;
+                const data = platformData[platform];
+                const tooltip = document.createElement('span');
+                tooltip.className = 'tooltiptext';
+                tooltip.textContent = data.description;
+                card.appendChild(tooltip);
+                card.classList.add('tooltip');
             });
-            
-            // Version selection
-            versionSelect.addEventListener('change', function() {
-                const version = this.value;
-                config.version = version;
-                
-                if (version) {
-                    // Show dependencies
-                    dependenciesContainer.style.display = 'block';
-                    
-                    // Populate dependencies
-                    const dependencies = platformData[config.platform].versions[version];
-                    dependenciesGrid.innerHTML = '';
-                    
-                    for (const dep in dependencies) {
-                        const dependencyItem = document.createElement('div');
-                        dependencyItem.className = 'dependency-item';
-                        
-                        dependencyItem.innerHTML = `
-                            <div class="dependency-icon">
-                                <span class="material-icons">info</span>
-                            </div>
-                            <div class="dependency-info">
-                                <h4>${dep.charAt(0).toUpperCase() + dep.slice(1)}</h4>
-                                <p>${dependencies[dep]}</p>
-                            </div>
-                        `;
-                        
-                        dependenciesGrid.appendChild(dependencyItem);
-                    }
-                    
-                    // Enable next step button
-                    const nextStepBtn = document.querySelector('#platform-step .next-step');
-                    nextStepBtn.disabled = false;
-                } else {
-                    // Hide dependencies
-                    dependenciesContainer.style.display = 'none';
-                    
-                    // Disable next step button
-                    const nextStepBtn = document.querySelector('#platform-step .next-step');
-                    nextStepBtn.disabled = true;
-                }
-                
-                updateSummary();
+
+            moduleCards.forEach(card => {
+                const module = card.dataset.module;
+                const data = moduleData[module];
+                const tooltip = document.createElement('span');
+                tooltip.className = 'tooltiptext';
+                tooltip.textContent = data.description;
+                card.appendChild(tooltip);
+                card.classList.add('tooltip');
             });
-            
-            // Next step navigation
-            nextStepButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const nextStep = this.dataset.next;
-                    navigateToStep(nextStep);
-                });
-            });
-            
-            // Previous step navigation
-            prevStepButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const prevStep = this.dataset.prev;
-                    navigateToStep(prevStep);
-                });
-            });
-            
-            // Sidebar navigation
-            navItems.forEach(item => {
-                item.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const step = this.dataset.step;
-                    navigateToStep(step);
-                });
-            });
-            
-            // Theme selection
-            themeCards.forEach(card => {
-                card.addEventListener('click', function() {
-                    // Remove selected class from all cards
-                    themeCards.forEach(c => c.classList.remove('selected'));
-                    
-                    // Add selected class to clicked card
-                    this.classList.add('selected');
-                    
-                    // Set the theme in config
-                    config.theme = this.dataset.theme;
-                    updateSummary();
-                });
-            });
-            
-            // Color pickers
-            primaryColorInput.addEventListener('input', function() {
-                config.primaryColor = this.value;
-                updateSummary();
-            });
-            
-            secondaryColorInput.addEventListener('input', function() {
-                config.secondaryColor = this.value;
-                updateSummary();
-            });
-            
-            tertiaryColorInput.addEventListener('input', function() {
-                config.tertiaryColor = this.value;
-                updateSummary();
-            });
-            
-            // Logo upload
-            storeLogoInput.addEventListener('change', function() {
-                if (this.files && this.files[0]) {
-                    const reader = new FileReader();
-                    
-                    reader.onload = function(e) {
-                        logoPreview.innerHTML = `<img src="${e.target.result}" alt="Logo Preview">`;
-                        config.logo = e.target.result;
-                        updateSummary();
-                    };
-                    
-                    reader.readAsDataURL(this.files[0]);
-                }
-            });
-            
-            // Favicon upload
-            storeFaviconInput.addEventListener('change', function() {
-                if (this.files && this.files[0]) {
-                    const reader = new FileReader();
-                    
-                    reader.onload = function(e) {
-                        faviconPreview.innerHTML = `<img src="${e.target.result}" alt="Favicon Preview">`;
-                        config.favicon = e.target.result;
-                        updateSummary();
-                    };
-                    
-                    reader.readAsDataURL(this.files[0]);
-                }
-            });
-            
-            // Font selection
-            fontOptions.forEach(option => {
-                option.addEventListener('click', function() {
-                    // Remove selected class from all options
-                    fontOptions.forEach(o => o.classList.remove('selected'));
-                    
-                    // Add selected class to clicked option
-                    this.classList.add('selected');
-                    
-                    // Set the font in config
-                    config.font = this.dataset.font;
-                    config.useDefaultFont = false;
-                    useDefaultFontCheckbox.checked = false;
-                    updateSummary();
-                });
-            });
-            
-            // Use default font checkbox
-            useDefaultFontCheckbox.addEventListener('change', function() {
-                config.useDefaultFont = this.checked;
-                updateSummary();
-            });
-            
-            // Sample data checkbox
-            installSampleDataCheckbox.addEventListener('change', function() {
-                config.sampleData = this.checked;
-                updateSummary();
-            });
-            
-            // Module toggles
-            document.querySelectorAll('.module-checkbox').forEach(checkbox => {
-                checkbox.addEventListener('change', function() {
-                    const moduleCard = this.closest('.module-card');
-                    const moduleTitle = moduleCard.querySelector('.module-title').textContent;
-                    
-                    if (this.checked) {
-                        if (!config.modules.includes(moduleTitle)) {
-                            config.modules.push(moduleTitle);
-                        }
-                    } else {
-                        const index = config.modules.indexOf(moduleTitle);
-                        if (index > -1) {
-                            config.modules.splice(index, 1);
-                        }
-                    }
-                    
-                    updateSummary();
-                });
-            });
-            
-            // Preview buttons
-            previewThemeBtn.addEventListener('click', openPreviewModal);
-            previewColorsBtn.addEventListener('click', openPreviewModal);
-            previewLogosBtn.addEventListener('click', openPreviewModal);
-            previewFontBtn.addEventListener('click', openPreviewModal);
-            
-            // Modal close
-            modalClose.addEventListener('click', closePreviewModal);
-            
-            // Modal tabs
-            modalTabs.forEach(tab => {
-                tab.addEventListener('click', function() {
-                    // Remove active class from all tabs
-                    modalTabs.forEach(t => t.classList.remove('active'));
-                    
-                    // Add active class to clicked tab
-                    this.classList.add('active');
-                    
-                    // Here you would typically switch the preview between desktop and mobile views
-                    // For this example, we'll just log the view
-                    console.log(`Switched to ${this.dataset.view} view`);
-                });
-            });
-            
-            // Build & Deploy button
-            buildDeployBtn.addEventListener('click', function() {
-                alert('Configuration submitted successfully!');
-                // In a real application, you would send the config to your backend here
-                console.log('Final Configuration:', config);
-            });
-        });
-        
-        // Functions
-        function navigateToStep(step) {
-            // Hide all wizard contents
-            wizardContents.forEach(content => content.classList.remove('active'));
-            
-            // Show the selected step
-            document.getElementById(`${step}-step`).classList.add('active');
-            
-            // Update active nav item
-            navItems.forEach(item => item.classList.remove('active'));
-            document.querySelector(`.nav-item[data-step="${step}"]`).classList.add('active');
-            
-            // Update progress bar
-            updateProgressBar(step);
-            
-            // Update step indicators
-            updateStepIndicators(step);
         }
-        
-        function updateProgressBar(step) {
-            let progress = 0;
+
+        // Update progress bar
+        function updateProgress() {
+            const progress = ((currentStep + 1) / steps.length) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        // Show current step
+        function showStep(stepIndex) {
+            document.querySelectorAll('.wizard-step').forEach(step => {
+                step.classList.remove('active');
+            });
+            document.getElementById(`${steps[stepIndex]}-step`).classList.add('active');
             
-            switch (step) {
+            // Update navigation items
+            navItems.forEach((item, index) => {
+                if (index <= stepIndex) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            
+            // Update buttons
+            prevBtn.disabled = stepIndex === 0;
+            
+            if (stepIndex === steps.length - 1) {
+                nextBtn.innerHTML = '<i class="material-icons">rocket_launch</i> Build and Deploy Site';
+                updateSummary();
+            } else {
+                nextBtn.innerHTML = 'Next Step <i class="material-icons">chevron_right</i>';
+            }
+            
+            updateProgress();
+            
+            // Scroll to top of step
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Validate current step
+        function validateStep(stepIndex) {
+            let isValid = true;
+            
+            switch (steps[stepIndex]) {
                 case 'intro':
-                    progress = 0;
+                    if (!configNameInput.value.trim()) {
+                        nameError.classList.add('active');
+                        configNameInput.focus();
+                        shakeElement(configNameInput);
+                        isValid = false;
+                    } else {
+                        nameError.classList.remove('active');
+                        configName = configNameInput.value.trim();
+                    }
                     break;
                 case 'platform':
-                    progress = 20;
-                    break;
-                case 'modules':
-                    progress = 40;
-                    break;
-                case 'styles':
-                    progress = 60;
-                    break;
-                case 'sample-data':
-                    progress = 80;
-                    break;
-                case 'summary':
-                    progress = 100;
+                    if (!selectedPlatform || !selectedVersion) {
+                        versionError.classList.add('active');
+                        if (!selectedPlatform) {
+                            shakeElement(document.querySelector('.platform-options'));
+                        } else {
+                            shakeElement(platformVersionSelect);
+                        }
+                        isValid = false;
+                    } else {
+                        versionError.classList.remove('active');
+                    }
                     break;
             }
             
-            progressFill.style.width = `${progress}%`;
-            document.querySelector('.progress-text span:last-child').textContent = `${progress}%`;
+            return isValid;
         }
-        
-        function updateStepIndicators(step) {
-            const indicators = {
-                intro: 0,
-                platform: 1,
-                modules: 2,
-                styles: 3,
-                'sample-data': 4,
-                summary: 5
-            };
+
+        // Shake element for error feedback
+        function shakeElement(element) {
+            element.classList.add('shake');
+            setTimeout(() => {
+                element.classList.remove('shake');
+            }, 500);
+        }
+
+        // Next button click handler
+        nextBtn.addEventListener('click', () => {
+            if (!validateStep(currentStep)) return;
             
-            const activeIndex = indicators[step];
-            const stepIndicators = document.querySelectorAll('.step-indicator');
-            
-            stepIndicators.forEach((indicator, index) => {
-                if (index <= activeIndex) {
-                    indicator.classList.add('active');
-                } else {
-                    indicator.classList.remove('active');
+            if (currentStep < steps.length - 1) {
+                currentStep++;
+                showStep(currentStep);
+            } else {
+                // Submit form
+                showSuccessMessage();
+            }
+        });
+
+        // Previous button click handler
+        prevBtn.addEventListener('click', () => {
+            if (currentStep > 0) {
+                currentStep--;
+                showStep(currentStep);
+            }
+        });
+
+        // Navigation item click handler
+        navItems.forEach((item, index) => {
+            item.addEventListener('click', () => {
+                if (index <= currentStep) {
+                    currentStep = index;
+                    showStep(currentStep);
                 }
             });
-        }
-        
-        function updateSummary() {
-            // Update store name
-            document.getElementById('summary-store-name').textContent = config.storeName || 'Not set';
+        });
+
+        // Platform card selection
+        platformCards.forEach(card => {
+            card.addEventListener('click', () => {
+                platformCards.forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                selectedPlatform = card.dataset.platform;
+                
+                // Populate versions
+                platformVersionSelect.innerHTML = '<option value="">-- Select a version --</option>';
+                for (const version in platformData[selectedPlatform].versions) {
+                    const versionData = platformData[selectedPlatform].versions[version];
+                    const option = document.createElement('option');
+                    option.value = version;
+                    option.textContent = `${version} (Released: ${versionData.releaseDate})`;
+                    platformVersionSelect.appendChild(option);
+                }
+                
+                versionSelect.classList.add('active');
+                versionError.classList.remove('active');
+                dependenciesSection.classList.remove('active');
+                selectedVersion = null;
+            });
+        });
+
+        // Platform version selection
+        platformVersionSelect.addEventListener('change', () => {
+            selectedVersion = platformVersionSelect.value;
+            if (selectedVersion) {
+                versionError.classList.remove('active');
+                
+                // Show dependencies
+                const dependencies = platformData[selectedPlatform].versions[selectedVersion];
+                dependencyList.innerHTML = '';
+                
+                for (const [key, value] of Object.entries(dependencies)) {
+                    if (key === 'releaseDate' || key === 'eolDate') continue;
+                    
+                    const item = document.createElement('div');
+                    item.className = 'dependency-item';
+                    item.innerHTML = `
+                        <span>${key}:</span> 
+                        <span>${value}</span>
+                        ${key === 'php' ? '<i class="material-icons" style="color: var(--success-color); margin-left: auto;">check_circle</i>' : ''}
+                    `;
+                    dependencyList.appendChild(item);
+                }
+                
+                // Add EOL information
+                const eolItem = document.createElement('div');
+                eolItem.className = 'dependency-item';
+                eolItem.innerHTML = `
+                    <span>Support Until:</span> 
+                    <span>${dependencies.eolDate}</span>
+                    ${new Date(dependencies.eolDate) > new Date() ? 
+                        '<i class="material-icons" style="color: var(--success-color); margin-left: auto;">verified</i>' : 
+                        '<i class="material-icons" style="color: var(--error-color); margin-left: auto;">warning</i>'}
+                `;
+                dependencyList.appendChild(eolItem);
+                
+                dependenciesSection.classList.add('active');
+            } else {
+                dependenciesSection.classList.remove('active');
+            }
+        });
+
+        // Theme selection
+        themeCards.forEach(card => {
+            card.addEventListener('click', () => {
+                themeCards.forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                selectedTheme = card.dataset.theme;
+                
+                // Set default font for theme
+                if (selectedTheme === 'hyva') {
+                    document.querySelector('.font-option[data-font="Poppins"]').click();
+                } else {
+                    document.querySelector('.font-option[data-font="Inter"]').click();
+                }
+            });
+        });
+
+        // Preview theme button
+        previewThemeBtn.addEventListener('click', () => {
+            // Set CSS variables for preview
+            document.documentElement.style.setProperty('--preview-primary', primaryColor.value);
+            document.documentElement.style.setProperty('--preview-secondary', secondaryColor.value);
+            document.documentElement.style.setProperty('--preview-tertiary', tertiaryColor.value);
+            document.documentElement.style.setProperty('--preview-font', useDefaultFont ? 
+                themeData[selectedTheme].defaultFont : `'${selectedFont}'`);
             
-            // Update platform info
-            document.getElementById('summary-platform').textContent = config.platform ? config.platform.charAt(0).toUpperCase() + config.platform.slice(1) : 'Not set';
-            document.getElementById('summary-version').textContent = config.version || 'Not set';
+            // Set logo placeholders
+            previewDesktopLogo.src = logoPreview.style.display === 'block' ? 
+                logoPreview.src : 'https://via.placeholder.com/150x50?text=Logo';
+            previewMobileLogo.src = logoPreview.style.display === 'block' ? 
+                logoPreview.src : 'https://via.placeholder.com/100x30?text=Logo';
             
-            // Here you would update other summary fields as needed
-            // For a complete implementation, you would update all fields in the summary section
-        }
-        
-        function openPreviewModal() {
+            // Show modal with desktop view
             previewModal.classList.add('active');
+            previewDesktop.classList.add('active');
+            previewMobile.classList.remove('active');
             
-            // Update modal content based on current configuration
-            // This would include setting the colors, fonts, logos, etc. in the preview
-            // For this example, we'll just log the action
-            console.log('Opening preview modal with current configuration');
-        }
-        
-        function closePreviewModal() {
+            // Set active tab
+            modalTabs.forEach(tab => tab.classList.remove('active'));
+            modalTabs[0].classList.add('active');
+        });
+
+        // Color preview button
+        previewColorsBtn.addEventListener('click', () => {
+            document.documentElement.style.setProperty('--preview-primary', primaryColor.value);
+            document.documentElement.style.setProperty('--preview-secondary', secondaryColor.value);
+            document.documentElement.style.setProperty('--preview-tertiary', tertiaryColor.value);
+            
+            previewModal.classList.add('active');
+            previewDesktop.classList.add('active');
+            previewMobile.classList.remove('active');
+            
+            modalTabs.forEach(tab => tab.classList.remove('active'));
+            modalTabs[0].classList.add('active');
+        });
+
+        // Logo upload
+        logoInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 2 * 1024 * 1024) { // 2MB limit
+                    alert('Logo file size should be less than 2MB');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    logoPreview.src = event.target.result;
+                    logoPreview.style.display = 'block';
+                    logoUpload.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Favicon upload
+        faviconInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 512 * 1024) { // 512KB limit
+                    alert('Favicon file size should be less than 512KB');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    faviconPreview.src = event.target.result;
+                    faviconPreview.style.display = 'block';
+                    faviconUpload.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Preview logos button
+        previewLogosBtn.addEventListener('click', () => {
+            if (logoPreview.style.display === 'block') {
+                previewDesktopLogo.src = logoPreview.src;
+                previewMobileLogo.src = logoPreview.src;
+            } else {
+                previewDesktopLogo.src = 'https://via.placeholder.com/150x50?text=Logo';
+                previewMobileLogo.src = 'https://via.placeholder.com/100x30?text=Logo';
+            }
+            
+            previewModal.classList.add('active');
+            previewDesktop.classList.add('active');
+            previewMobile.classList.remove('active');
+            
+            modalTabs.forEach(tab => tab.classList.remove('active'));
+            modalTabs[0].classList.add('active');
+        });
+
+        // Font selection
+        fontOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                fontOptions.forEach(opt => opt.classList.remove('selected'));
+                option.classList.add('selected');
+                selectedFont = option.dataset.font;
+            });
+        });
+
+        // Font search functionality
+        const fontSearch = document.querySelector('.font-search');
+        fontSearch.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            fontOptions.forEach(option => {
+                const fontName = option.dataset.font.toLowerCase();
+                if (fontName.includes(searchTerm)) {
+                    option.style.display = 'block';
+                } else {
+                    option.style.display = 'none';
+                }
+            });
+        });
+
+        // Use default font checkbox
+        useDefaultFontCheckbox.addEventListener('change', (e) => {
+            useDefaultFont = e.target.checked;
+        });
+
+        // Preview font button
+        previewFontBtn.addEventListener('click', () => {
+            if (useDefaultFont) {
+                document.documentElement.style.setProperty('--preview-font', themeData[selectedTheme].defaultFont);
+            } else {
+                document.documentElement.style.setProperty('--preview-font', `'${selectedFont}'`);
+            }
+            
+            previewModal.classList.add('active');
+            previewDesktop.classList.add('active');
+            previewMobile.classList.remove('active');
+            
+            modalTabs.forEach(tab => tab.classList.remove('active'));
+            modalTabs[0].classList.add('active');
+        });
+
+        // Module selection
+        moduleCards.forEach(card => {
+            card.addEventListener('click', () => {
+                card.classList.toggle('selected');
+                const module = card.dataset.module;
+                
+                if (card.classList.contains('selected')) {
+                    if (!selectedModules.includes(module)) {
+                        selectedModules.push(module);
+                    }
+                } else {
+                    selectedModules = selectedModules.filter(m => m !== module);
+                }
+            });
+        });
+
+        // Modal tabs
+        modalTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabName = tab.dataset.tab;
+                modalTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                previewDesktop.classList.remove('active');
+                previewMobile.classList.remove('active');
+                
+                if (tabName === 'desktop') {
+                    previewDesktop.classList.add('active');
+                } else {
+                    previewMobile.classList.add('active');
+                }
+            });
+        });
+
+        // Close modal
+        modalClose.addEventListener('click', () => {
             previewModal.classList.remove('active');
+        });
+
+        // Save progress button
+        saveProgressBtn.addEventListener('click', () => {
+            // Validate current step
+            if (!validateStep(currentStep)) return;
+            
+            // Save configuration to localStorage
+            const config = {
+                name: configNameInput.value.trim(),
+                platform: selectedPlatform,
+                version: selectedVersion,
+                theme: selectedTheme,
+                font: selectedFont,
+                useDefaultFont: useDefaultFont,
+                modules: selectedModules,
+                installSampleData: installSampleDataCheckbox.checked,
+                primaryColor: primaryColor.value,
+                secondaryColor: secondaryColor.value,
+                tertiaryColor: tertiaryColor.value,
+                logo: logoPreview.src,
+                favicon: faviconPreview.src,
+                currentStep: currentStep
+            };
+            
+            localStorage.setItem('magentoConfig', JSON.stringify(config));
+            
+            // Show save confirmation
+            const savedIndicator = document.createElement('div');
+            savedIndicator.textContent = 'Progress saved!';
+            savedIndicator.style.position = 'fixed';
+            savedIndicator.style.bottom = '20px';
+            savedIndicator.style.right = '20px';
+            savedIndicator.style.backgroundColor = 'var(--success-color)';
+            savedIndicator.style.color = 'white';
+            savedIndicator.style.padding = '10px 20px';
+            savedIndicator.style.borderRadius = '4px';
+            savedIndicator.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
+            savedIndicator.style.zIndex = '1000';
+            savedIndicator.style.animation = 'fadeIn 0.3s ease';
+            document.body.appendChild(savedIndicator);
+            
+            setTimeout(() => {
+                savedIndicator.style.animation = 'fadeIn 0.3s ease reverse forwards';
+                setTimeout(() => {
+                    document.body.removeChild(savedIndicator);
+                }, 300);
+            }, 2000);
+        });
+
+        // Load saved progress
+        function loadProgress() {
+            const savedConfig = localStorage.getItem('magentoConfig');
+            if (savedConfig) {
+                const config = JSON.parse(savedConfig);
+                
+                configNameInput.value = config.name || '';
+                selectedPlatform = config.platform;
+                selectedVersion = config.version;
+                selectedTheme = config.theme;
+                selectedFont = config.font;
+                useDefaultFont = config.useDefaultFont || false;
+                selectedModules = config.modules || [];
+                installSampleDataCheckbox.checked = config.installSampleData || false;
+                currentStep = config.currentStep || 0;
+                
+                // Set platform selection
+                if (selectedPlatform) {
+                    document.querySelector(`.platform-card[data-platform="${selectedPlatform}"]`).click();
+                    
+                    // Set version selection
+                    if (selectedVersion) {
+                        setTimeout(() => {
+                            platformVersionSelect.value = selectedVersion;
+                            platformVersionSelect.dispatchEvent(new Event('change'));
+                        }, 100);
+                    }
+                }
+                
+                // Set theme selection
+                if (selectedTheme) {
+                    document.querySelector(`.theme-card[data-theme="${selectedTheme}"]`).click();
+                }
+                
+                // Set font selection
+                if (selectedFont) {
+                    document.querySelector(`.font-option[data-font="${selectedFont}"]`).click();
+                }
+                
+                // Set color selections
+                if (config.primaryColor) primaryColor.value = config.primaryColor;
+                if (config.secondaryColor) secondaryColor.value = config.secondaryColor;
+                if (config.tertiaryColor) tertiaryColor.value = config.tertiaryColor;
+                
+                // Set logo and favicon
+                if (config.logo && config.logo !== '') {
+                    logoPreview.src = config.logo;
+                    logoPreview.style.display = 'block';
+                    logoUpload.style.display = 'none';
+                }
+                
+                if (config.favicon && config.favicon !== '') {
+                    faviconPreview.src = config.favicon;
+                    faviconPreview.style.display = 'block';
+                    faviconUpload.style.display = 'none';
+                }
+                
+                // Set module selections
+                selectedModules.forEach(module => {
+                    document.querySelector(`.module-card[data-module="${module}"]`).click();
+                });
+                
+                // Set use default font
+                useDefaultFontCheckbox.checked = useDefaultFont;
+                
+                // Show current step
+                showStep(currentStep);
+            }
         }
+
+        // Install sample data checkbox
+        installSampleDataCheckbox.addEventListener('change', (e) => {
+            installSampleData = e.target.checked;
+        });
+
+        // Show success message
+        function showSuccessMessage() {
+            successOverlay.style.display = 'block';
+            successMessage.style.display = 'block';
+            
+            // Create confetti
+            createConfetti();
+            
+            // Hide after animation
+            setTimeout(() => {
+                successOverlay.style.animation = 'fadeIn 0.3s ease reverse forwards';
+                successMessage.style.animation = 'successPopup 0.3s ease reverse forwards';
+                
+                setTimeout(() => {
+                    successOverlay.style.display = 'none';
+                    successMessage.style.display = 'none';
+                }, 300);
+            }, 3000);
+        }
+
+        // OK button in success message
+        successOkBtn.addEventListener('click', () => {
+            successOverlay.style.animation = 'fadeIn 0.3s ease reverse forwards';
+            successMessage.style.animation = 'successPopup 0.3s ease reverse forwards';
+            
+            setTimeout(() => {
+                successOverlay.style.display = 'none';
+                successMessage.style.display = 'none';
+            }, 300);
+        });
+
+        // Create confetti effect
+        function createConfetti() {
+            const colors = ['#3f51b5', '#5c6bc0', '#7986cb', '#1a237e', '#3949ab'];
+            
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = `${Math.random() * 100}vw`;
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.width = `${Math.random() * 10 + 5}px`;
+                confetti.style.height = `${Math.random() * 10 + 5}px`;
+                confetti.style.animationDuration = `${Math.random() * 3 + 2}s`;
+                confetti.style.animationDelay = `${Math.random() * 0.5}s`;
+                document.body.appendChild(confetti);
+                
+                // Remove confetti after animation
+                setTimeout(() => {
+                    document.body.removeChild(confetti);
+                }, 5000);
+            }
+        }
+
+        // Update summary
+        function updateSummary() {
+            document.getElementById('summary-name').textContent = configNameInput.value || 'Not specified';
+            document.getElementById('summary-platform').textContent = selectedPlatform ? 
+                platformData[selectedPlatform].name : 'Not selected';
+            document.getElementById('summary-version').textContent = selectedVersion || 'Not selected';
+            
+            // Update dependencies
+            const dependenciesList = document.getElementById('summary-dependencies');
+            dependenciesList.innerHTML = '';
+            
+            if (selectedPlatform && selectedVersion) {
+                const dependencies = platformData[selectedPlatform].versions[selectedVersion];
+                for (const [key, value] of Object.entries(dependencies)) {
+                    if (key === 'releaseDate' || key === 'eolDate') continue;
+                    const li = document.createElement('li');
+                    li.textContent = `${key}: ${value}`;
+                    dependenciesList.appendChild(li);
+                }
+            }
+            
+            // Update modules
+            const modulesList = document.getElementById('summary-modules');
+            modulesList.innerHTML = '';
+            
+            if (selectedModules.length > 0) {
+                selectedModules.forEach(module => {
+                    const li = document.createElement('li');
+                    li.textContent = moduleData[module].name;
+                    modulesList.appendChild(li);
+                });
+            } else {
+                const li = document.createElement('li');
+                li.textContent = 'No modules selected';
+                modulesList.appendChild(li);
+            }
+            
+            // Update styles
+            document.getElementById('summary-theme').textContent = selectedTheme ? 
+                themeData[selectedTheme].name : 'Not selected';
+            document.getElementById('summary-font').textContent = useDefaultFont ? 
+                'Default theme font' : selectedFont;
+            document.getElementById('summary-font').style.fontFamily = useDefaultFont ? 
+                'inherit' : `'${selectedFont}'`;
+            
+            // Update logo and favicon previews in summary
+            if (logoPreview.style.display === 'block') {
+                document.getElementById('summary-logo').src = logoPreview.src;
+            } else {
+                document.getElementById('summary-logo').src = 'https://via.placeholder.com/150x50?text=Logo';
+            }
+            
+            if (faviconPreview.style.display === 'block') {
+                document.getElementById('summary-favicon').src = faviconPreview.src;
+            } else {
+                document.getElementById('summary-favicon').src = 'https://via.placeholder.com/50x50?text=Favicon';
+            }
+            
+            // Update sample data
+            document.getElementById('summary-sample-data').textContent = 
+                installSampleDataCheckbox.checked ? 'Yes' : 'No';
+        }
+
+        // Toggle sidebar
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+        });
+
+        // Initialize
+        initTooltips();
+        loadProgress();
+        showStep(currentStep);
     </script>
 </body>
 </html>
